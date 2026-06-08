@@ -1,0 +1,30 @@
+# Datasource
+spring.datasource.url=jdbc:postgresql://localhost:5432/nutrust
+spring.datasource.username=${DB_USER:nutrust}
+spring.datasource.password=${DB_PASSWORD:nutrust}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.default_timezone=Asia/Seoul
+
+# Flyway
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration
+
+# JWT
+app.jwt.secret=${JWT_SECRET:changemechangemechangemechangemechangemechangeme}
+app.jwt.expiration=86400000
+app.jwt.refreshExpiration=604800000
+
+# Server
+server.port=8080
+
+# Actuator
+management.endpoints.web.exposure.include=health,info
+
+# Logging
+logging.level.com.nubiz.nutrust=DEBUG
