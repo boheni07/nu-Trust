@@ -403,6 +403,41 @@ def create_issues(milestone_ids):
     return total_created
 
 
+def sync_board(milestone_ids):
+    print("=" * 60)
+    print("📋 GitLab Issue Board 등록")
+    print("=" * 60)
+    
+    boards = api("GET", f"projects/{PROJECT_ID}/boards")
+    if not boards:
+        print("  ⚠️  Board가 없습니다. 먼저 Issue Board를 생성해주세요.")
+        return
+    
+    board_id = boards[0]["id"]
+    print(f"  Board ID: {board_id}")
+    
+    issues = api("GET", f"projects/{PROJECT_ID}/issues", 
+                 params={"per_page": 100, "state": "all"}) or []
+    
+    if not issues:
+        print("  등록된 이슈가 없습니다.")
+        return
+    
+    print(f"  총 {len(issues)}개 이슈를 Board에 등록 중...")
+    
+    success = 0
+    for issue in issues:
+        iid = issue["iid"]
+        card = api("POST", f"projects/{PROJECT_ID}/boards/{board_id}/cards",
+                   json_data={"issue_id": iid})
+        if card:
+            success += 1
+        else:
+            print(f"  ⚠️  이슈 #{iid} Board 등록 실패")
+    
+    print(f"  ✅ {success}/{len(issues)}개 이슈가 Board에 등록됨")
+
+
 def main():
     print("nu_Trust WBS → GitLab 동기화 시작")
     print(f"  GitLab: {PROJECT_URL}")
@@ -412,6 +447,8 @@ def main():
     milestone_ids = create_milestones()
     print()
     create_issues(milestone_ids)
+    print()
+    sync_board(milestone_ids)
     
     print(f"\n🎉 완료!")
     print(f"   GitLab에서 확인: {PROJECT_URL}/-/milestones")
