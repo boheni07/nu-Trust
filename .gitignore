@@ -46,6 +46,13 @@ target/
 *.tmp
 *.orig
 
+# === Gradle ===
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradlew
+!gradlew.bat
+
 # === Frontend Build ===
 *.tsbuildinfo
 node_modules/.cache/

@@ -43,7 +43,6 @@ public class AuthenticationService {
 		String accessToken = tokenProvider.createAccessToken(authentication);
 		String refreshToken = tokenProvider.createRefreshToken(authentication);
 
-		// RefreshToken Redis 저장
 		User user = userRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new RuntimeException("User not found"));
 		redisTemplate.opsForValue().set(
@@ -57,7 +56,7 @@ public class AuthenticationService {
 			.id(user.getId())
 			.email(user.getEmail())
 			.name(user.getName())
-			.company(user.getCompany())
+			.companyId(user.getCompanyId())
 			.build();
 
 		return LoginResponse.builder()
@@ -70,73 +69,41 @@ public class AuthenticationService {
 	@Transactional
 	public LoginResponse register(RegisterRequest request) {
 		if (userRepository.existsByEmail(request.getEmail())) {
-			throw new IllegalArgumentException("Email already exists");
+			throw new RuntimeException("Email already in use");
 		}
-
-		Role customerRole = roleRepository.findByName("CUSTOMER")
-			.orElseThrow(() -> new RuntimeException("Default role not found"));
 
 		User user = User.builder()
 			.email(request.getEmail())
 			.password(passwordEncoder.encode(request.getPassword()))
 			.name(request.getName())
 			.phone(request.getPhone())
-			.company(request.getCompany())
+			.companyId(request.getCompanyId())
 			.enabled(true)
 			.build();
 
+		Role customerRole = roleRepository.findByName("CUSTOMER")
+			.orElseThrow(() -> new RuntimeException("Customer role not found"));
 		user.getRoles().add(customerRole);
+
 		userRepository.save(user);
-
-		return LoginResponse.builder()
-			.user(LoginResponse.UserInfo.builder()
-				.id(user.getId())
-				.email(user.getEmail())
-				.name(user.getName())
-				.company(user.getCompany())
-				.build())
-			.build();
-	}
-
-	@Transactional
-	public LoginResponse refreshToken(String refreshToken) {
-		if (!tokenProvider.validateToken(refreshToken)) {
-			throw new IllegalArgumentException("Invalid refresh token");
-		}
-
-		Authentication authentication = tokenProvider.getAuthentication(refreshToken);
-		String email = authentication.getName();
-
-		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new RuntimeException("User not found"));
-
-		// Redis에서 저장된 refreshToken과 일치하는지 확인
-		String storedToken = redisTemplate.opsForValue().get("refreshToken:" + user.getId());
-		if (storedToken == null || !storedToken.equals(refreshToken)) {
-			throw new IllegalArgumentException("Refresh token not found or expired");
-		}
-
-		// 새 accessToken 발급
-		String newAccessToken = tokenProvider.createAccessToken(authentication);
 
 		LoginResponse.UserInfo userInfo = LoginResponse.UserInfo.builder()
 			.id(user.getId())
 			.email(user.getEmail())
 			.name(user.getName())
-			.company(user.getCompany())
+			.companyId(user.getCompanyId())
 			.build();
 
 		return LoginResponse.builder()
-			.accessToken(newAccessToken)
-			.refreshToken(refreshToken)
+			.accessToken("")
+			.refreshToken("")
 			.user(userInfo)
 			.build();
 	}
 
-	@Transactional
-	public void logout(String refreshToken) {
+	public LoginResponse refreshToken(String refreshToken) {
 		if (!tokenProvider.validateToken(refreshToken)) {
-			throw new IllegalArgumentException("Invalid refresh token");
+			throw new RuntimeException("Invalid refresh token");
 		}
 
 		Authentication authentication = tokenProvider.getAuthentication(refreshToken);
@@ -145,8 +112,46 @@ public class AuthenticationService {
 		User user = userRepository.findByEmail(email)
 			.orElseThrow(() -> new RuntimeException("User not found"));
 
-		// Redis에서 refreshToken 삭제
+		String storedToken = redisTemplate.opsForValue().get("refreshToken:" + user.getId());
+		if (storedToken == null || !storedToken.equals(refreshToken)) {
+			throw new RuntimeException("Refresh token not found in Redis");
+		}
+
+		String newAccessToken = tokenProvider.createAccessToken(authentication);
+		String newRefreshToken = tokenProvider.createRefreshToken(authentication);
+
+		redisTemplate.opsForValue().set(
+			"refreshToken:" + user.getId(),
+			newRefreshToken,
+			refreshTokenExpiration,
+			TimeUnit.MILLISECONDS
+		);
+
+		LoginResponse.UserInfo userInfo = LoginResponse.UserInfo.builder()
+			.id(user.getId())
+			.email(user.getEmail())
+			.name(user.getName())
+			.companyId(user.getCompanyId())
+			.build();
+
+		return LoginResponse.builder()
+			.accessToken(newAccessToken)
+			.refreshToken(newRefreshToken)
+			.user(userInfo)
+			.build();
+	}
+
+	public void logout(String refreshToken) {
+		if (!tokenProvider.validateToken(refreshToken)) {
+			throw new RuntimeException("Invalid refresh token");
+		}
+
+		Authentication authentication = tokenProvider.getAuthentication(refreshToken);
+		String email = authentication.getName();
+
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(() -> new RuntimeException("User not found"));
+
 		redisTemplate.delete("refreshToken:" + user.getId());
 	}
 }
-

@@ -23,5 +23,5 @@ public class RegisterRequest {
 
 	private String phone;
 
-	private String company;
+	private Long companyId;
 }

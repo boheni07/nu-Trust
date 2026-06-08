@@ -69,7 +69,7 @@ public class JwtTokenProvider {
 
 		Collection<? extends GrantedAuthority> authorityList = Arrays.stream(authorities.split(","))
 			.map(SimpleGrantedAuthority::new)
-			collect(Collectors.toList());
+			.collect(Collectors.toList());
 
 		UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
 			.username(email)
@@ -80,52 +80,6 @@ public class JwtTokenProvider {
 		return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
 			userDetails, null, authorityList
 		);
-	}
-
-	public boolean validateToken(String token) {
-		try {
-			Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-}
-
-	public String createAccessToken(Authentication authentication) {
-		String authorities = authentication.getAuthorities().stream()
-			.map(GrantedAuthority::getAuthority)
-			.collect(Collectors.joining(","));
-
-		return Jwts.builder()
-			.subject(authentication.getName())
-			.claim("authorities", authorities)
-			.issuedAt(new Date())
-			.expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
-			.signWith(key)
-			.compact();
-	}
-
-	public String createRefreshToken(Authentication authentication) {
-		return Jwts.builder()
-			.subject(authentication.getName())
-			.issuedAt(new Date())
-			.expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
-			.signWith(key)
-			.compact();
-	}
-
-	public Authentication getAuthentication(String token) {
-		Claims claims = Jwts.parser()
-			.verifyWith(key)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload();
-
-		String email = claims.getSubject();
-		String authorities = claims.get("authorities", String.class);
-
-		return null;
 	}
 
 	public boolean validateToken(String token) {
