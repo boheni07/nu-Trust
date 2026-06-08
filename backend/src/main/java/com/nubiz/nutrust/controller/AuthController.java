@@ -2,6 +2,7 @@ package com.nubiz.nutrust.controller;
 
 import com.nubiz.nutrust.dto.LoginRequest;
 import com.nubiz.nutrust.dto.LoginResponse;
+import com.nubiz.nutrust.dto.RefreshTokenRequest;
 import com.nubiz.nutrust.dto.RegisterRequest;
 import com.nubiz.nutrust.service.AuthenticationService;
 import jakarta.validation.Valid;
@@ -20,6 +21,17 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
 		return ResponseEntity.ok(authenticationService.login(request));
+	}
+
+	@PostMapping("/refresh")
+	public ResponseEntity<LoginResponse> refresh(@RequestBody RefreshTokenRequest request) {
+		return ResponseEntity.ok(authenticationService.refreshToken(request.getRefreshToken()));
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<Void> logout(@RequestBody RefreshTokenRequest request) {
+		authenticationService.logout(request.getRefreshToken());
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/register")
