@@ -1,0 +1,83 @@
+# === OS / IDE ===
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-*
+*.tmproj
+.project
+.settings/
+.classpath
+*.iws
+
+# === Node.js ===
+node_modules/
+dist/
+build/
+.nuxt/
+.cache/
+*.local
+.env
+.env.*
+!.env.example
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+ENV/
+*.whl/
+
+# === Java / Maven ===
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.bak
+*.tmp
+*.orig
+
+# === Frontend Build ===
+*.tsbuildinfo
+node_modules/.cache/
+
+# === Database ===
+*.db
+*.sqlite
+*.sqlite3
+data.mv.db
+h2/
+
+# === Docker ===
+docker-compose.override.yml
+*.pid
+*.seed
+
+# === Secrets (ALWAYS exclude) ===
+*.pem
+*.key
+*.jks
+*.p12
+keystore.jks
+service-account-key.json
+google-services.json
+
+# === Generated / Temporary ===
+*.log.gz
+*.dump
+*.bak
+*.sql.gz
+coverage/
+*.nyc_output
+
+# === GitLab CI cache (local) ===
+.gl-cache/

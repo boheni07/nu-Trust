@@ -1,0 +1,19 @@
+# Code Ownership — nu_Trust
+# https://docs.gitlab.com/ee/user/project/codeowners/#code-ownership-file
+
+# All modules require approval from the respective lead
+*               @boheni07
+
+# Frontend (Vue 3)
+frontend/       @boheni07
+
+# Backend (Spring Boot)
+backend/        @boheni07
+
+# CI/CD & Infrastructure
+.gitlab-ci.yml  @boheni07
+infra/          @boheni07
+
+# Documentation
+docs/           @boheni07
+.sisyphus/plans/ @boheni07
