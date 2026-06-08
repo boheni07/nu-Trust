@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +37,7 @@ public class UserService {
 			.orElseThrow(() -> new RuntimeException("Current user not found"));
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Transactional
 	public UserResponse create(UserCreateRequest request) {
 		if (userRepository.existsByEmail(request.getEmail())) {
@@ -58,6 +60,7 @@ public class UserService {
 		return UserResponse.from(userRepository.save(user));
 	}
 
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
 	@Transactional(readOnly = true)
 	public List<UserResponse> list(String nameFilter) {
 		User adminUser = getCurrentUser();
@@ -69,17 +72,21 @@ public class UserService {
 			.toList();
 	}
 
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
 	@Transactional(readOnly = true)
 	public UserResponse getById(Long id) {
 		User user = userRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("User not found: " + id));
+		checkCompanyScope(getCurrentUser(), user);
 		return UserResponse.from(user);
 	}
 
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
 	@Transactional
 	public UserResponse update(Long id, UserUpdateRequest request) {
 		User user = userRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("User not found: " + id));
+		checkCompanyScope(getCurrentUser(), user);
 
 		if (request.getEmail() != null) user.setEmail(request.getEmail());
 		if (request.getPassword() != null) user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -90,20 +97,32 @@ public class UserService {
 		return UserResponse.from(userRepository.save(user));
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Transactional
 	public void delete(Long id) {
-		if (!userRepository.existsById(id)) {
-			throw new RuntimeException("User not found: " + id);
-		}
+		var user = userRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("User not found: " + id));
+		checkCompanyScope(getCurrentUser(), user);
 		userRepository.deleteById(id);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Transactional
 	public UserResponse setStatus(Long id, UserStatus status) {
-		User user = userRepository.findById(id)
+		var user = userRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("User not found: " + id));
+		checkCompanyScope(getCurrentUser(), user);
 		user.setStatus(status);
 		return UserResponse.from(userRepository.save(user));
+	}
+
+	private void checkCompanyScope(User adminUser, User target) {
+		boolean isAdmin = adminUser.getRoles().stream()
+			.anyMatch(r -> "ADMIN".equals(r.getName()));
+		if (isAdmin) return;
+		if (!adminUser.getCompanyId().equals(target.getCompanyId())) {
+			throw new IllegalArgumentException("You can only manage users in your company");
+		}
 	}
 
 	private ScopeQuery resolveScopeQuery(User adminUser, String nameFilter) {
