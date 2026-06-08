@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import com.nubiz.nutrust.entity.UserStatus;
 
 @Getter
 @Builder
@@ -15,8 +16,8 @@ public class UserResponse {
 	private String name;
 	private String phone;
 	private Long companyId;
-	private Boolean enabled;
 	private Set<String> roles;
+	private UserStatus status;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
@@ -31,7 +32,7 @@ public class UserResponse {
 			.name(user.getName())
 			.phone(user.getPhone())
 			.companyId(user.getCompanyId())
-			.enabled(user.getEnabled())
+			.status(user.getStatus())
 			.roles(roles)
 			.createdAt(user.getCreatedAt())
 			.updatedAt(user.getUpdatedAt())

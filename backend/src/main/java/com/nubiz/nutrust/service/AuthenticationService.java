@@ -5,6 +5,7 @@ import com.nubiz.nutrust.dto.LoginResponse;
 import com.nubiz.nutrust.dto.RegisterRequest;
 import com.nubiz.nutrust.entity.Role;
 import com.nubiz.nutrust.entity.User;
+import com.nubiz.nutrust.entity.UserStatus;
 import com.nubiz.nutrust.repository.RoleRepository;
 import com.nubiz.nutrust.repository.UserRepository;
 import com.nubiz.nutrust.security.JwtTokenProvider;
@@ -78,7 +79,7 @@ public class AuthenticationService {
 			.name(request.getName())
 			.phone(request.getPhone())
 			.companyId(request.getCompanyId())
-			.enabled(true)
+			.status(UserStatus.ACTIVE)
 			.build();
 
 		Role customerRole = roleRepository.findByName("CUSTOMER")

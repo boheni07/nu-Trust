@@ -1,6 +1,7 @@
 package com.nubiz.nutrust.controller;
 
 import com.nubiz.nutrust.dto.UserCreateRequest;
+import com.nubiz.nutrust.entity.UserStatus;
 import com.nubiz.nutrust.dto.UserResponse;
 import com.nubiz.nutrust.dto.UserUpdateRequest;
 import com.nubiz.nutrust.service.UserService;
@@ -46,5 +47,13 @@ public class UserAdminController {
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		userService.delete(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/{id}/status")
+	public ResponseEntity<UserResponse> setStatus(
+		@PathVariable Long id,
+		@RequestParam UserStatus status
+	) {
+		return ResponseEntity.ok(userService.setStatus(id, status));
 	}
 }

@@ -37,7 +37,7 @@ public class User {
 	private Long companyId;
 
 	@Builder.Default
-	private Boolean enabled = true;
+	private UserStatus status = UserStatus.ACTIVE;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(

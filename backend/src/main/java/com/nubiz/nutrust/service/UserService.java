@@ -5,6 +5,7 @@ import com.nubiz.nutrust.dto.UserResponse;
 import com.nubiz.nutrust.dto.UserUpdateRequest;
 import com.nubiz.nutrust.entity.Role;
 import com.nubiz.nutrust.entity.User;
+import com.nubiz.nutrust.entity.UserStatus;
 import com.nubiz.nutrust.repository.RoleRepository;
 import com.nubiz.nutrust.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class UserService {
 			.name(request.getName())
 			.phone(request.getPhone())
 			.companyId(request.getCompanyId())
-			.enabled(true)
+			.status(UserStatus.ACTIVE)
 			.build();
 
 		Role role = roleRepository.findByName(request.getRole())
@@ -84,7 +85,7 @@ public class UserService {
 		if (request.getPassword() != null) user.setPassword(passwordEncoder.encode(request.getPassword()));
 		if (request.getName() != null) user.setName(request.getName());
 		if (request.getPhone() != null) user.setPhone(request.getPhone());
-		if (request.getEnabled() != null) user.setEnabled(request.getEnabled());
+		if (request.getStatus() != null) user.setStatus(UserStatus.valueOf(request.getStatus()));
 
 		return UserResponse.from(userRepository.save(user));
 	}
@@ -95,6 +96,14 @@ public class UserService {
 			throw new RuntimeException("User not found: " + id);
 		}
 		userRepository.deleteById(id);
+	}
+
+	@Transactional
+	public UserResponse setStatus(Long id, UserStatus status) {
+		User user = userRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("User not found: " + id));
+		user.setStatus(status);
+		return UserResponse.from(userRepository.save(user));
 	}
 
 	private ScopeQuery resolveScopeQuery(User adminUser, String nameFilter) {
