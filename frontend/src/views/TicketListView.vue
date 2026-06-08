@@ -1,35 +1,182 @@
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+<script>
+import { ref, onMounted, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import {
+  listByProject,
+  getSummary
+} from '../api/tickets.js'
 
-const router = useRouter()
-const activeFilter = ref('all')
-const filters = [
-  { key: 'all', label: '전체', count: 47, dot: 'var(--gray-400)' },
-  { key: 'registered', label: '등록됨', count: 8, dot: 'var(--gray-400)' },
-  { key: 'received', label: '접수됨', count: 12, dot: 'var(--blue)' },
-  { key: 'processing', label: '처리 중', count: 18, dot: 'var(--amber)' },
-  { key: 'delayed', label: '지체됨', count: 3, dot: 'var(--red)' },
-  { key: 'comp-req', label: '완료 요청', count: 4, dot: 'var(--purple)' },
-  { key: 'completed', label: '완료', count: 2, dot: 'var(--green)' },
-]
+export default {
+  setup() {
+    const router = useRouter()
+    const activeFilter = ref('all')
+    const tickets = ref([])
+    const summary = ref(null)
+    const loading = ref(true)
+    const error = ref(null)
+    const currentPage = ref(0)
+    const totalPages = ref(0)
+    const totalElements = ref(0)
+    const filterKey = ref('')
 
-const tickets = [
-  { id: 156, title: '로그인 페이지 응답 지연 현상', status: 'received', statusLabel: '접수됨', priority: 'high', priorityLabel: 'HIGH', company: 'ABC 물류', assignee: '김지원', assigneeInit: '김', deadline: '2026/05/30', urgent: true, regDate: '05/28' },
-  { id: 155, title: '대시보드 레이아웃 깨짐 버그', status: 'processing', statusLabel: '처리 중', priority: 'medium', priorityLabel: 'MEDIUM', company: 'XYZ 테크', assignee: '박개발', assigneeInit: '박', deadline: '2026/06/02', urgent: false, regDate: '05/27' },
-  { id: 154, title: 'Feature X 추가 개발 요청', status: 'registered', statusLabel: '등록됨', priority: 'low', priorityLabel: 'LOW', company: 'DEF 커머스', assignee: '미정', assigneeInit: '미', deadline: '2026/06/10', urgent: false, regDate: '05/26' },
-  { id: 153, title: '서버 CPU 사용률 비정상 급등', status: 'delayed', statusLabel: '지체됨', priority: 'high', priorityLabel: 'HIGH', company: 'GHI 솔루션', assignee: '김지원', assigneeInit: '김', deadline: '2026/05/29', urgent: true, regDate: '05/25' },
-  { id: 152, title: 'OAuth 토큰 갱신 실패 오류', status: 'comp-req', statusLabel: '완료 요청', priority: 'medium', priorityLabel: 'MEDIUM', company: 'JKL 뱅크', assignee: '최PM', assigneeInit: '최', deadline: '2026/05/31', urgent: false, regDate: '05/24' },
-  { id: 151, title: 'DB Connection Pool 고갈 현상', status: 'processing', statusLabel: '처리 중', priority: 'high', priorityLabel: 'HIGH', company: 'ABC 물류', assignee: '박개발', assigneeInit: '박', deadline: '2026/06/01', urgent: true, regDate: '05/23' },
-  { id: 150, title: 'UI 컴포넌트 색상 불일치', status: 'completed', statusLabel: '완료', priority: 'low', priorityLabel: 'LOW', company: 'DEF 커머스', assignee: '이디자이너', assigneeInit: '이', deadline: '2026/05/28', urgent: false, regDate: '05/22' },
-]
+    const filterStatusMap = {
+      all: undefined,
+      registered: 'REGISTERED',
+      received: 'RECEIVED',
+      processing: 'PROCESSING',
+      delayed: 'DELAYED',
+      'comp-req': 'COMPLETION_REQUESTED',
+      completed: 'COMPLETED'
+    }
 
-function selectFilter(key) {
-  activeFilter.value = key
-}
+    const priorityMap = {
+      'LOW': 'LOW',
+      'MEDIUM': 'MEDIUM',
+      'HIGH': 'HIGH',
+      'URGENT': 'URGENT'
+    }
 
-function navigateToTicket(id) {
-  router.push(`/tickets/${id}`)
+    const statusMap = {
+      'REGISTERED': 'registered',
+      'RECEIVED': 'received',
+      'PROCESSING': 'processing',
+      'DELAYED': 'delayed',
+      'COMPLETION_REQUESTED': 'comp-req',
+      'APPROVED': 'approved',
+      'COMPLETED': 'completed'
+    }
+
+    const statusLabelMap = {
+      'REGISTERED': '등록됨',
+      'RECEIVED': '접수됨',
+      'PROCESSING': '처리 중',
+      'DELAYED': '지체됨',
+      'COMPLETION_REQUESTED': '완료 요청',
+      'APPROVED': '승인됨',
+      'COMPLETED': '완료'
+    }
+
+    const priorityLabelMap = {
+      'LOW': 'LOW',
+      'MEDIUM': 'MEDIUM',
+      'HIGH': 'HIGH',
+      'URGENT': 'URGENT'
+    }
+
+    const filters = computed(() => {
+      const counts = summary.value?.byStatusCounts || {}
+      return [
+        { key: 'all', label: '전체', count: totalElements.value, dot: 'var(--gray-400)' },
+        { key: 'registered', label: '등록됨', count: counts.REGISTERED || 0, dot: 'var(--gray-400)' },
+        { key: 'received', label: '접수됨', count: counts.RECEIVED || 0, dot: 'var(--blue)' },
+        { key: 'processing', label: '처리 중', count: counts.PROCESSING || 0, dot: 'var(--amber)' },
+        { key: 'delayed', label: '지체됨', count: counts.DELAYED || 0, dot: 'var(--red)' },
+        { key: 'comp-req', label: '완료 요청', count: counts.COMPLETION_REQUESTED || 0, dot: 'var(--purple)' },
+        { key: 'completed', label: '완료', count: counts.COMPLETED || 0, dot: 'var(--green)' },
+      ]
+    })
+
+    const displayTickets = computed(() => {
+      return tickets.value.map(t => {
+        const status = statusMap[t.status] || t.status
+        const statusLabel = statusLabelMap[t.status] || t.status
+        const priorityLabel = priorityLabelMap[t.priority] || t.priority
+        const urgency = t.priority === 'URGENT'
+        const parts = (t.assignee || '미정').split(' ')
+        const init = parts[parts.length - 1] ? parts[parts.length - 1][0] : '미'
+        const deadline = t.deadline ? t.deadline.split('T')[0].replace(/-/g, '/') : ''
+        const regDate = t.registeredAt ? t.registeredAt.slice(5, 10).replace('-', '/') : ''
+
+        return {
+          id: t.id,
+          title: t.title,
+          status: status,
+          statusLabel: statusLabel,
+          priority: t.priority.toLowerCase?.() || t.priority,
+          priorityLabel: priorityLabel,
+          company: t.customerCompanyName || '-',
+          assignee: t.assigneeName || '미정',
+          assigneeInit: init,
+          deadline: deadline,
+          urgent: urgency,
+          regDate: regDate
+        }
+      })
+    })
+
+    const subtitle = computed(() => {
+      return `총 ${totalElements.value}개 티켓`
+    })
+
+    async function loadTickets() {
+      try {
+        loading.value = true
+        error.value = null
+        const status = filterStatusMap[activeFilter.value]
+        const response = await listByProject({
+          page: currentPage.value,
+          size: 20,
+          status: status,
+          keyword: filterKey.value || undefined
+        })
+        tickets.value = response.content || []
+        totalPages.value = response.totalPages || 0
+        totalElements.value = response.totalElements || 0
+      }
+      catch (e) {
+        error.value = true
+        console.error('Failed to load tickets', e)
+      }
+      finally {
+        loading.value = false
+      }
+    }
+
+    async function loadSummary() {
+      try {
+        const result = await getSummary()
+        summary.value = result
+      }
+      catch (e) {
+        console.error('Failed to load summary', e)
+      }
+    }
+
+    function selectFilter(key) {
+      activeFilter.value = key
+      currentPage.value = 0
+      loadTickets()
+    }
+
+    function navigateToTicket(id) {
+      router.push(`/tickets/${id}`)
+    }
+
+    function goToPage(page) {
+      currentPage.value = page
+      loadTickets()
+    }
+
+    onMounted(async () => {
+      await loadSummary()
+      await loadTickets()
+    })
+
+    return {
+      activeFilter,
+      tickets: displayTickets,
+      filters,
+      loading,
+      error,
+      subtitle,
+      selectFilter,
+      navigateToTicket,
+      currentPage,
+      totalPages,
+      totalElements,
+      goToPage
+    }
+  }
 }
 </script>
 
@@ -39,7 +186,7 @@ function navigateToTicket(id) {
     <div class="page-toolbar">
       <div>
         <div class="page-title">티켓 목록</div>
-        <div class="page-subtitle">총 {{ activeFilter === 'all' ? '47' : '—' }}개 티켓 · 12개 처리 대기</div>
+        <div class="page-subtitle">{{ subtitle }}</div>
       </div>
       <button class="btn btn-primary">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -74,7 +221,20 @@ function navigateToTicket(id) {
 
     <!-- Table Card -->
     <div class="card">
-      <div class="table-wrap">
+      <!-- Loading State -->
+      <div v-if="loading" class="loading-state">
+        <div class="loading-spinner"></div>
+        <span>티켓 목록을 불러오는 중입니다</span>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="error-state">
+        <span>데이터를 불러오지 못했습니다</span>
+        <button class="btn btn-secondary btn-sm" @click="loadTickets">다시 시도</button>
+      </div>
+
+      <!-- Table -->
+      <div v-else class="table-wrap">
         <table>
           <thead>
             <tr>
@@ -90,6 +250,11 @@ function navigateToTicket(id) {
             </tr>
           </thead>
           <tbody>
+            <tr v-if="tickets.length === 0">
+              <td colspan="9" style="text-align:center;padding:40px;color:var(--gray-400)">
+                티켓이 없습니다
+              </td>
+            </tr>
             <tr v-for="ticket in tickets" :key="ticket.id" @click="navigateToTicket(ticket.id)" style="cursor:pointer">
               <td><input type="checkbox" style="accent-color:var(--teal)"></td>
               <td style="font-family:var(--mono);color:var(--teal);font-weight:700">#{{ ticket.id }}</td>
@@ -107,13 +272,18 @@ function navigateToTicket(id) {
     </div>
 
     <!-- Pagination -->
-    <div class="pagination">
-      <button class="pagination-btn" disabled>‹</button>
-      <button class="pagination-btn active">1</button>
-      <button class="pagination-btn">2</button>
-      <button class="pagination-btn">3</button>
-      <button class="pagination-btn">4</button>
-      <button class="pagination-btn next">›</button>
+    <div class="pagination" v-if="totalPages > 1">
+      <button class="pagination-btn" :disabled="currentPage === 0" @click="goToPage(currentPage - 1)">‹</button>
+      <button
+        v-for="page in totalPages"
+        :key="page"
+        class="pagination-btn"
+        :class="{ 'active': currentPage === page }"
+        @click="goToPage(page)"
+      >
+        {{ page + 1 }}
+      </button>
+      <button class="pagination-btn next" :disabled="currentPage >= totalPages - 1" @click="goToPage(currentPage + 1)">›</button>
     </div>
   </div>
 </template>
@@ -132,6 +302,37 @@ function navigateToTicket(id) {
   justify-content: center;
   vertical-align: middle;
   flex-shrink: 0;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px;
+  color: var(--gray-500);
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gray-200);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px;
+  color: var(--red);
 }
 
 .pagination {
