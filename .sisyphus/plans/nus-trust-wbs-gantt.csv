@@ -1,0 +1,176 @@
+﻿Task ID,Parent ID,Sprint,Week,Task Name,Assignee,Role,Start Date,End Date,Duration (days),Dependencies
+001,,Sprint 0,Day 1,"Git 레포지토리 생성, Git Flow 브랜치 전략 설정",T1,Infra,2026-06-08,2026-06-09,2,
+002,,Sprint 0,Day 1,Frontend: Vite + React + TypeScript 프로젝트 초기화,T2,FE,2026-06-08,2026-06-09,2,
+003,,Sprint 0,Day 1,Backend: Spring Boot 프로젝트 생성 (Gradle 기반),T4,BE,2026-06-08,2026-06-09,2,
+004,,Sprint 0,Day 1,"Docker Compose 구성 (PostgreSQL, Redis, RabbitMQ)",T5,Infra,2026-06-08,2026-06-09,2,
+005,,Sprint 0,Day 1,"Flyway 마이그레이션 초기화, 첫 migration script 작성",T5,Infra,2026-06-08,2026-06-09,2,
+006,,Sprint 0,Day 1,Dockerfile 작성 (Multi-stage build),T1,Infra,2026-06-08,2026-06-09,2,
+007,,Sprint 0,Day 1,Docker Compose 환경변수(.env) 분리 (dev/stage/prod),T5,Infra,2026-06-08,2026-06-09,2,
+008,,Sprint 0,Day 1,Docker Healthcheck 설정,T5,Infra,2026-06-08,2026-06-09,2,
+009,,Sprint 0,Day 3,"GitLab CI 파이프라인 구성 (빌드, 테스트, lint)",T6,CI/CD,2026-06-10,2026-06-12,3,
+010,,Sprint 0,Day 3,ESLint + Prettier + React hooks 플러그인 설정,T2,FE,2026-06-10,2026-06-12,3,
+011,,Sprint 0,Day 3,SpotBugs + Checkstyle Gradle 플러그인 설정,T4,BE,2026-06-10,2026-06-12,3,
+012,,Sprint 0,Day 3,TailwindCSS + daisyUI 프론트엔드 통합,T3,FE,2026-06-10,2026-06-12,3,
+013,,Sprint 0,Day 3,MyBatis + PostgreSQL 연결 설정,T5,BE,2026-06-10,2026-06-12,3,
+014,,Sprint 0,Day 3,MyBatis Generator 설정 — 18개 테이블 생성 목표,T5,Infra,2026-06-10,2026-06-12,3,
+015,,Sprint 0,Day 3,"MyBatis 설정: resultMap, SQLSessionFactory, 다중 데이터소스",T5,BE,2026-06-10,2026-06-12,3,
+016,,Sprint 0,Day 3,"Spring Security 기본 설정 (PasswordEncoder, CSRF disable, Cors)",T4,BE,2026-06-10,2026-06-12,3,
+017,,Sprint 0,Day 3,RabbitMQ explicit queue/exchange/routing-key DDL 설정,T5,Infra,2026-06-10,2026-06-12,3,
+018,,Sprint 0,Day 3,Prometheus + Grafana Spring Boot Actuator 의존성 추가,T6,Infra,2026-06-10,2026-06-12,3,
+019,,Sprint 0,Day 6,"V1_DDL: companies, users, projects 테이블 DDL 생성",T5,DB,2026-06-13,2026-06-17,5,
+020,,Sprint 0,Day 6,"V2_DDL: tickets, processing_plans, ticket_comments, ticket_files",T5,DB,2026-06-13,2026-06-17,5,
+021,,Sprint 0,Day 6,"V3_DDL: project_managers, project_support_managers, project_assignments",T5,DB,2026-06-13,2026-06-17,5,
+022,,Sprint 0,Day 6,"V4_DDL: cards 관련 테이블 (management_cards, card_assignments)",T5,DB,2026-06-13,2026-06-17,5,
+023,,Sprint 0,Day 6,"V5_DDL: 파티션 테이블 - chat_messages_part_master, ticket_histories_part_master",T5,DB,2026-06-13,2026-06-17,5,
+024,,Sprint 0,Day 6,"V6_DDL: notification 테이블, notification_logs_part_master, audit_logs",T5,DB,2026-06-13,2026-06-17,5,
+025,,Sprint 0,Day 6,"V7_DDL: lookup 테이블 (status_mappings, priority_mappings, system_settings)",T5,DB,2026-06-13,2026-06-17,5,
+026,,Sprint 0,Day 6,"V8_DDL: 트리거/함수 생성 (update_updated_at, audit_log_trigger)",T5,DB,2026-06-13,2026-06-17,5,
+027,,Sprint 0,Day 6,Flyway migration 전체 검증,T5+T6,Validation,2026-06-13,2026-06-17,5,
+028,,Sprint 0,Day 11,Docker Compose에 MinIO 추가 (S3 호환 스토리지),T5,Infra,2026-06-18,2026-06-20,3,
+029,,Sprint 0,Day 11,MinIO 초기 버킷 자동 생성 스크립트,T5,Infra,2026-06-18,2026-06-20,3,
+030,,Sprint 0,Day 11,Backend S3 설정 (application.yml),T5,BE,2026-06-18,2026-06-20,3,
+101,,Sprint 1,Wk 3-4,"JWT 토큰 발급/검증 API (POST /auth/login, /auth/register)",T4,BE,2026-06-22,2026-07-01,10,"101,104,106"
+102,,Sprint 1,Wk 3-4,회원가입 API - SUPPORT 회원가입 검증 (role=SUPPORT),T4,BE,2026-06-22,2026-07-01,10,101
+103,,Sprint 1,Wk 3-4,회원가입 API - CUSTOMER 회원가입 검증,T4,BE,2026-06-22,2026-07-01,10,101
+104,,Sprint 1,Wk 3-4,Spring Security 설정 (JWT 필터 체인),T4,BE,2026-06-22,2026-07-01,10,
+105,,Sprint 1,Wk 3-4,"RBAC 어노테이션 (@PreAuthorize, role hierarchy) 적용",T4,BE,2026-06-22,2026-07-01,10,104
+106,,Sprint 1,Wk 3-4,Login 페이지 UI (email/password),T2,FE,2026-06-22,2026-07-01,10,
+107,,Sprint 1,Wk 3-4,Register 페이지 UI (역할 선택),T2,FE,2026-06-22,2026-07-01,10,106
+108,,Sprint 1,Wk 3-4,POST /companies (DEVELOPER) - ADMIN 전용,T4,BE,2026-06-22,2026-07-01,10,104
+109,,Sprint 1,Wk 3-4,POST /companies (CLIENT) - ADMIN/SUPPORT 가능,T4,BE,2026-06-22,2026-07-01,10,104
+110,,Sprint 1,Wk 3-4,GET/PUT/DELETE /companies/{id},T4,BE,2026-06-22,2026-07-01,10,"108,109"
+111,,Sprint 1,Wk 3-4,Company 관리 UI (Admin Panel),T3,FE,2026-06-22,2026-07-01,10,110
+112,,Sprint 1,Wk 3-4,POST /customer-register (SUPPORT가 CLIENT만 SELECT),T4,BE,2026-06-22,2026-07-01,10,104
+113,,Sprint 1,Wk 3-4,비밀번호 해싱: BCryptPasswordEncoder 설정,T4,BE,2026-06-22,2026-07-01,10,
+114,,Sprint 1,Wk 3-4,"JWT Access Token 설정 (15분), Refresh Token (7일)",T4,BE,2026-06-22,2026-07-01,10,113
+115,,Sprint 1,Wk 3-4,POST /auth/refresh (Refresh Token → New Access Token),T4,BE,2026-06-22,2026-07-01,10,114
+116,,Sprint 1,Wk 3-4,Refresh Token Redis 저장 (Token Rotation 구현),T5,BE,2026-06-22,2026-07-01,10,115
+117,,Sprint 1,Wk 3-4,CORS Configuration (allowedOrigins),T4,BE,2026-06-22,2026-07-01,10,
+118,,Sprint 1,Wk 3-4,"Input Validation: Spring Validator, @Valid, Bean Validation",T4,BE,2026-06-22,2026-07-01,10,
+119,,Sprint 0,Day 3,"로깅: Logback XML 설정 (JSON 포맷, Kibana/Elasticsearch export)",T4,Infra,2026-06-10,2026-06-12,3,
+119,,Sprint 1,Wk 3-4,"Login Rate Limiting (10 req/min, IP 기반 Redis)",T6,BE,2026-06-22,2026-07-01,10,116
+120,,Sprint 1,Wk 3-4,로그인 실패 시 5회 → 계정 잠금,T4,BE,2026-06-22,2026-07-01,10,"101,119"
+121,,Sprint 1,Wk 3-4,POST /projects (SUPPORT/MANAGER 배정 포함),T4,BE,2026-07-06,2026-07-15,10,108
+122,,Sprint 1,Wk 3-4,GET /projects (역할별 필터링),T4,BE,2026-07-06,2026-07-15,10,108
+123,,Sprint 1,Wk 3-4,"PUT /projects/{id}, DELETE /projects/{id}",T4,BE,2026-07-06,2026-07-15,10,121
+124,,Sprint 1,Wk 3-4,Soft delete: projects.deleted_at NULLABLE,T4,BE,2026-07-06,2026-07-15,10,123
+125,,Sprint 1,Wk 3-4,프로젝트 관리 UI (Admin Panel),T3,FE,2026-07-06,2026-07-15,10,121
+126,,Sprint 1,Wk 3-4,POST /assignments (SUPPORT) - project_assignments,T4,BE,2026-07-06,2026-07-15,10,121
+127,,Sprint 1,Wk 3-4,PUT /assignments/{id} (revise),T5,BE,2026-07-06,2026-07-15,10,126
+128,,Sprint 1,Wk 3-4,DELETE /assignments/{id} - Validation,T5,BE,2026-07-06,2026-07-15,10,127
+129,,Sprint 1,Wk 3-4,프로젝트 배정 검증 상세 흐름 구현,T4,BE,2026-07-06,2026-07-15,10,126
+130,,Sprint 1,Wk 3-4,프로젝트 카드 생성/수정/삭제 API (management_cards CRUD),T5,BE,2026-07-06,2026-07-15,10,
+131,,Sprint 1,Wk 3-4,POST /cards - ADMIN 또는 프로젝트 배정 SUPPORT,T5,BE,2026-07-06,2026-07-15,10,130
+132,,Sprint 1,Wk 3-4,PUT /cards/{id},T5,BE,2026-07-06,2026-07-15,10,130
+133,,Sprint 1,Wk 3-4,DELETE /cards/{id} - ADMIN 전용,T4,BE,2026-07-06,2026-07-15,10,130
+134,,Sprint 1,Wk 3-4,카드 관리 UI (Project Detail - Server/SW Card Grid),T3,FE,2026-07-06,2026-07-15,10,130
+135,,Sprint 1,Wk 3-4,카드 추가/수정 폼,T3,FE,2026-07-06,2026-07-15,10,131
+136,,Sprint 1,Wk 3-4,"GET /cards - 전체 읽기 허용, 그리드 렌더링",T2,FE,2026-07-06,2026-07-15,10,130
+137,,Sprint 1,Wk 3-4,프로젝트 카드 JSONB 구조,T5,DB,2026-07-06,2026-07-10,5,
+138,,Sprint 1,Wk 3-4,"MyBatis Entity 생성: companies, users, projects, assignments",T5,BE,2026-07-06,2026-07-15,10,137
+139,,Sprint 1,Wk 3-4,"MyBatis Mapper XML 생성 (Company, Project, Assignment)",T5,BE,2026-07-06,2026-07-15,10,138
+140,,Sprint 1,Wk 3-4,"MyBatis Entity 생성: project_assignment_histories, ticket_chat_messages",T5,BE,2026-07-06,2026-07-15,10,
+141,,Sprint 1,Wk 3-4,MyBatis Mapper XML 생성 (project_assignment_histories),T5,BE,2026-07-06,2026-07-15,10,140
+142,,Sprint 1,Wk 3-4,project_assignments audit_log_trigger 테스트,T6,QA,2026-07-06,2026-07-15,10,"139,141"
+144,,Sprint 2,Wk 7-8,"CREATE TABLE tickets DDL (FTS 인덱스, soft delete)",T5,DB,2026-07-20,2026-07-24,5,
+145,,Sprint 2,Wk 7-8,POST /tickets - CUSTOMER가 소속 CLIENT 프로젝트에 티켓 생성,T4,BE,2026-07-20,2026-07-29,10,144
+146,,Sprint 2,Wk 7-8,GET /tickets - 역할별 필터링,T4,BE,2026-07-20,2026-07-29,10,144
+147,,Sprint 2,Wk 7-8,GET /tickets/{id} - 동일 프로젝트 내 접근 검증,T4,BE,2026-07-20,2026-07-29,10,146
+148,,Sprint 2,Wk 7-8,UPDATE tickets/{id} - 상태 전이 (SUPPORT 이상만),T4,BE,2026-07-20,2026-07-29,10,145
+149,,Sprint 2,Wk 7-8,Ticket 워크플로우 상태 전이 엔진 (State Machine 패턴),T4,BE,2026-07-20,2026-07-29,10,148
+150,,Sprint 2,Wk 7-8,상태 전이 규칙 검증 (REGISTERED->RECEIVED 등),T4,BE,2026-07-20,2026-07-29,10,149
+151,,Sprint 2,Wk 7-8,ticket_histories 파티션 생성 + 상태 전이 기록,T5,DB,2026-07-20,2026-07-24,5,144
+152,,Sprint 2,Wk 7-8,Optimistic Locking - version column 적용,T4,BE,2026-07-20,2026-07-29,10,
+153,,Sprint 2,Wk 7-8,409 Conflict 처리 - 메시지 + auto-refresh,T2,FE,2026-07-20,2026-07-29,10,152
+154,,Sprint 2,Wk 7-8,"Ticket 목록 UI (Status, Type, Creator, Dates, Assignee)",T2,FE,2026-07-20,2026-07-29,10,146
+155,,Sprint 2,Wk 7-8,Ticket 검색 (FTS),T2,FE,2026-07-20,2026-07-29,10,146
+156,,Sprint 2,Wk 7-8,Ticket 생성 폼,T2,FE,2026-07-20,2026-07-29,10,145
+157,,Sprint 2,Wk 7-8,Ticket 상세 페이지 레이아웃 (7 섹션),T2,FE,2026-08-03,2026-08-12,10,
+158,,Sprint 2,Wk 7-8,Status Ribbon 구현 (전체 너비 그라데이션),T2,FE,2026-08-03,2026-08-12,10,157
+159,,Sprint 2,Wk 7-8,상태별 Action Buttons (7 상태마다),T2,FE,2026-08-03,2026-08-12,10,158
+160,,Sprint 2,Wk 7-8,History Timeline (상태 전이 시계열),T2,FE,2026-08-03,2026-08-12,10,
+161,,Sprint 2,Wk 7-8,Processing Plan 생성 (POST /processing_plans),T4,BE,2026-08-03,2026-08-12,10,
+162,,Sprint 2,Wk 7-8,Processing Plan 승인/반려,T4,BE,2026-08-03,2026-08-12,10,161
+163,,Sprint 2,Wk 7-8,extension_requests 테이블 생성,T5,DB,2026-08-03,2026-08-07,5,
+164,,Sprint 2,Wk 7-8,POST /extension_requests (연장 신청),T4,BE,2026-08-03,2026-08-12,10,163
+165,,Sprint 2,Wk 7-8,PUT /extension_requests/{id}/approve_reject,T4,BE,2026-08-03,2026-08-12,10,164
+166,,Sprint 2,Wk 7-8,티켓 상세 - 연장 신청 폼 UI,T2,FE,2026-08-03,2026-08-12,10,164
+167,,Sprint 2,Wk 7-8,Ticket 상세 - Chat/Comment 섹션,T2+T3,FE,2026-08-03,2026-08-12,10,
+168,,Sprint 2,Wk 7-8,댓글 작성 API (POST /tickets/{id}/comments),T5,BE,2026-08-03,2026-08-12,10,
+169,,Sprint 2,Wk 7-8,"대댓글 지원 (parent_id NULLABLE, tree 구조)",T5,BE,2026-08-03,2026-08-12,10,168
+170,,Sprint 2,Wk 7-8,첨부파일 API (POST /tickets/{id}/files),T5,BE,2026-08-03,2026-08-12,10,
+171,,Sprint 2,Wk 7-8,Chat 메시지 전송 API (실시간 준비용),T5,BE,2026-08-03,2026-08-12,10,
+172,,Sprint 2,Wk 7-8,Admin Panel - 티켓 일괄 관리 UI,T3,FE,2026-08-03,2026-08-12,10,
+173,,Sprint 2,Wk 7-8,Ticket 우선순위 매핑 UI,T3,FE,2026-08-03,2026-08-12,10,
+174,,Sprint 2,Wk 7-8,파일 업로드: S3 Presigned URL 생성 API,T4,BE,2026-08-03,2026-08-12,10,171
+175,,Sprint 2,Wk 7-8,S3 버전 관리 활성화 + lifecycle rule,T5,Infra,2026-08-03,2026-08-12,10,
+176,,Sprint 2,Wk 7-8,"ticket_files 업로드 검증 (타입, 용량 10MB)",T5,BE,2026-08-03,2026-08-12,10,174
+177,,Sprint 2,Wk 7-8,audit_logs 자동 삽입: Spring AOP @Aspect,T5,BE,2026-08-03,2026-08-12,10,
+178,,Sprint 2,Wk 7-8,"trigger 검증: update_updated_at, audit_log_trigger",T6,QA,2026-08-03,2026-08-12,10,177
+179,,Sprint 2,Wk 7-8,파티션 관리: 월별 파티션 자동 스크립트,T5,DB,2026-08-03,2026-08-07,5,
+180,,Sprint 2,Wk 7-8,파티션 검증: 현재 활성 파티션 확인,T6,QA,2026-08-03,2026-08-12,10,179
+181,,Sprint 2,Wk 7-8,"MyBatis Entity 생성: tickets, comments, files, plans, extensions",T5,BE,2026-08-03,2026-08-12,10,144
+182,,Sprint 2,Wk 7-8,"MyBatis Mapper XML 생성 (Ticket, Comment, File, Plan, Extension)",T5,BE,2026-08-03,2026-08-12,10,181
+183,,Sprint 2,Wk 7-8,"MyBatis Mapper XML 생성 (extension_requests, processing_plans)",T5,BE,2026-08-03,2026-08-12,10,181
+184,,Sprint 2,Wk 7-8,MyBatis @SelectProvider 동적 SQL (역할별 필터링),T5,BE,2026-08-03,2026-08-12,10,146
+185,,Sprint 3,Wk 9,WebSocket (STOMP over SockJS) 서버 구성,T4,BE,2026-08-10,2026-08-19,10,
+186,,Sprint 3,Wk 9,STOMP 구독 채널 설정 (/queue/chat.{ticketId}),T5,BE,2026-08-10,2026-08-19,10,185
+187,,Sprint 3,Wk 9,"WebSocket 브로드캐스팅 (새 메시지, typing indicator)",T5,BE,2026-08-10,2026-08-19,10,186
+188,,Sprint 3,Wk 9,"RABBITMQ queue 설정 (ticket.ws, ticket.notify)",T5,BE,2026-08-10,2026-08-19,10,017
+189,,Sprint 3,Wk 9,Chat 메시지 저장 (part_master 파티션),T5,DB,2026-08-10,2026-08-14,5,
+190,,Sprint 3,Wk 9,"Chat UI 구현 (채팅 버블 - 발신자 우측, 수신자 좌측)",T3,FE,2026-08-10,2026-08-19,10,187
+191,,Sprint 3,Wk 9,Real-time 업데이트 (WebSocket subscribe),T3,FE,2026-08-10,2026-08-19,10,190
+192,,Sprint 3,Wk 9,Typing Indicator,T3,FE,2026-08-10,2026-08-19,10,190
+193,,Sprint 3,Wk 9,채팅 파일 첨부 미리보기 (Inline Preview),T3,FE,2026-08-10,2026-08-19,10,190
+194,,Sprint 3,Wk 9,WebSocket 연결 끊김 복구 (Reconnection logic),T3,FE,2026-08-10,2026-08-19,10,191
+195,,Sprint 3,Wk 9,"STOMP 핸들러 상세: @MessageMapping, Principal",T4,BE,2026-08-10,2026-08-19,10,185
+196,,Sprint 3,Wk 9,STOMP 인증: JWT 검증 (ChannelInterceptor),T5,BE,2026-08-10,2026-08-19,10,185
+197,,Sprint 3,Wk 9,RABBITMQ consumer: ticket.notify (NotificationService),T5,BE,2026-08-10,2026-08-19,10,188
+198,,Sprint 3,Wk 9,RABBITMQ consumer: ticket.ws (WebSocket SockJS),T5,BE,2026-08-10,2026-08-19,10,188
+199,,Sprint 3,Wk 9,RABBITMQ consumer: ticket.expired (만료 티켓 감지),T5,BE,2026-08-10,2026-08-19,10,
+200,,Sprint 3,Wk 9,"cron 스케줄러: 09:00 실행, OVERDUE→DELAYED 자동 전이",T5,BE,2026-08-10,2026-08-19,10,199
+201,,Sprint 3,Wk 10,Notification 이벤트 정의 (EVT-01~EVT-10),T5,BE,2026-08-17,2026-08-26,10,
+202,,Sprint 3,Wk 10,Notification Preferences API,T5,BE,2026-08-17,2026-08-26,10,
+203,,Sprint 3,Wk 10,Notification 이벤트 구독 API,T5,BE,2026-08-17,2026-08-26,10,
+204,,Sprint 3,Wk 10,"Notification 발송 로직 (In-App, Push, Email, SMS)",T5,BE,2026-08-17,2026-08-26,10,201
+205,,Sprint 3,Wk 10,Quiet Hours 설정 구현,T5,BE,2026-08-17,2026-08-26,10,
+206,,Sprint 3,Wk 10,Batched 알림 (5분 단위 묶음 발송),T5,BE,2026-08-17,2026-08-26,10,
+207,,Sprint 3,Wk 11,Admin 대시보드 UI,T3,FE,2026-08-24,2026-09-02,10,
+208,,Sprint 3,Wk 11,프로젝트 관리 UI (SideMenu + CardGrid),T3,FE,2026-08-24,2026-09-02,10,
+209,,Sprint 3,Wk 11,Ticket 일괄 관리 UI (Admin Panel),T3,FE,2026-08-24,2026-09-02,10,
+210,,Sprint 3,Wk 11,배정 관리 UI (Admin Panel),T3,FE,2026-08-24,2026-09-02,10,
+211,,Sprint 3,Wk 11,Notification 이벤트 팝업 UI,T3,FE,2026-08-24,2026-09-02,10,
+212,,Sprint 3,Wk 11,알림 팝업 UI,T3,FE,2026-08-24,2026-09-02,10,
+213,,Sprint 3,Wk 11,알림 사이드바 UI,T3,FE,2026-08-24,2026-09-02,10,
+214,,Sprint 3,Wk 11,Quiet Hours UI,T3,FE,2026-08-24,2026-09-02,10,
+215,,Sprint 3,Wk 11,시스템 설정 UI (settings),T3,FE,2026-08-24,2026-09-02,10,
+216,,Sprint 3,Wk 11,프로젝트 상세 페이지 UI (7 섹션),T3,FE,2026-08-24,2026-09-02,10,
+217,,Sprint 3,Wk 11,Kanban 보 UI (Ticket 상태별 드래그 앤 드롭),T3,FE,2026-08-24,2026-09-02,10,
+218,,Sprint 3,Wk 11,Kanban 드래그 앤 드롭 상태 전이 API 연동,T3,FE,2026-08-24,2026-09-02,10,149
+219,,Sprint 3,Wk 11,"Dashboard: 티켓 통계 차트 (Pie, Bar)",T3,FE,2026-08-24,2026-09-02,10,
+220,,Sprint 3,Wk 11,전체 페이지 반응형 디자인 검증,T3,FE,2026-08-24,2026-09-02,10,
+221,,Sprint 4,Wk 13,"단위 테스트 작성 (BE): Auth, Company, Project, Ticket",T4+T5,QA,2026-08-31,2026-09-09,10,
+222,,Sprint 4,Wk 13,"단위 테스트 작성 (FE): Login, Register, Admin Panel",T2+T3,QA,2026-08-31,2026-09-09,10,
+223,,Sprint 4,Wk 13,E2E 테스트 (Cypress): Login → Project → Ticket → Chat,T6,QA,2026-08-31,2026-09-09,10,
+224,,Sprint 4,Wk 13,"성능 테스트: WebSocket 100 연결, 500 TPS 목표",T6,QA,2026-08-31,2026-09-09,10,
+225,,Sprint 4,Wk 13,"보안 검증: SQL Injection, XSS, CSRF, JWT, RBAC bypass",T6,QA,2026-08-31,2026-09-09,10,
+226,,Sprint 4,Wk 13,"MyBatis Mapper 검증: 15개 Mapper XML, explain analyze",T5,QA,2026-08-31,2026-09-09,10,
+227,,Sprint 4,Wk 13,DTO Validation: @Valid 누락 엔드포인트 0건 검증,T4,QA,2026-08-31,2026-09-09,10,
+228,,Sprint 4,Wk 13,Accessibility: WCAG 2.1 AA Level 검증,T3,QA,2026-08-31,2026-09-09,10,
+229,,Sprint 4,Wk 13,"Mobile 브라우저 호환성 검증 (Safari, Chrome, Firefox)",T2,QA,2026-08-31,2026-09-09,10,
+230,,Sprint 4,Wk 14,UAT 환경 구축 (staging 서버),T1,Infra,2026-09-07,2026-09-16,10,
+231,,Sprint 4,Wk 14,"UAT 진행 (테스트 사용자 모집, 기능 테스트)",T1+T6,UAT,2026-09-07,2026-09-16,10,
+232,,Sprint 4,Wk 14,"UAT 피드백 반영 (bug fix, 기능 보완)",T4+T2,Fix,2026-09-07,2026-09-16,10,
+233,,Sprint 4,Wk 14,UAT 리포트 작성 및 검토,T6,QA,2026-09-07,2026-09-16,10,
+234,,Sprint 4,Wk 15,"Docker 이미지 빌드 (프론트엔드, 백엔드)",T1,Infra,2026-09-14,2026-09-23,10,
+235,,Sprint 4,Wk 15,Docker Compose staging 구성,T5,Infra,2026-09-14,2026-09-23,10,
+236,,Sprint 4,Wk 15,AWS EKS deployment yaml 작성,T1,Infra,2026-09-14,2026-09-23,10,
+237,,Sprint 4,Wk 15,Prometheus metrics 수집 + Custom metrics,T5,Infra,2026-09-14,2026-09-23,10,
+238,,Sprint 4,Wk 15,Grafana 대시보드 4개 구성,T6,Infra,2026-09-14,2026-09-23,10,
+239,,Sprint 4,Wk 15,로깅 중앙화: ELK stack 연동,T5,Infra,2026-09-14,2026-09-23,10,
+240,,Sprint 4,Wk 15,"RDS 자동 백업 설정 (PITR, retention=7일)",T5,Infra,2026-09-14,2026-09-23,10,
+241,,Sprint 4,Wk 15,백업 검증: pg_restore 테스트,T6,QA,2026-09-14,2026-09-23,10,
+242,,Sprint 4,Wk 15,GitLab CI 배포 파이프라인 완성,T6,CI/CD,2026-09-14,2026-09-23,10,
+243,,Sprint 4,Wk 15,"도메인 설정 (HTTPS, SSL/TLS, cert-manager)",T1,Infra,2026-09-14,2026-09-23,10,
+244,,Sprint 4,Wk 15,API Gateway (NGINX/Kong) staging 설정,T1,Infra,2026-09-14,2026-09-23,10,
+245,,Sprint 4,Wk 15,첫 Release (Release v0.1),T1,Release,2026-09-14,2026-09-23,10,
