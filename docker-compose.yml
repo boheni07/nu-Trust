@@ -1,0 +1,73 @@
+version: '3.9'
+
+services:
+  # ── Frontend (Vue 3 + Vite → Nginx) ──
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # ── Backend (Spring Boot 3.x) ──
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/nutrust
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-nutrust}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-nutrust}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      REDIS_HOST: redis
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+    restart: unless-stopped
+
+  # ── PostgreSQL 15 ──
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: nutrust
+      POSTGRES_USER: ${DB_USER:-nutrust}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-nutrust}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # ── RabbitMQ (STOMP over SockJS) ──
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+  # ── Redis (Cache / Sessions) ──
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  rabbitmq_data:
+  redis_data:

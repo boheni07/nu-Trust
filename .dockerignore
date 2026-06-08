@@ -1,0 +1,7 @@
+frontend/
+backend/
+.git
+.gitlab-ci.yml
+*.md
+.dockerignore
+!.gitignore
