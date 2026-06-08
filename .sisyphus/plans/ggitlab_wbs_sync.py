@@ -381,7 +381,7 @@ def create_issues(milestone_ids):
                 "description": description,
                 "milestone_id": milestone_id,
                 "due_date": due_date,
-                "labels": [item["labels"], item["priority"]],
+                "labels": [item["labels"], item["priority"], "Status::ToDo"],
                 "issue_type": "task",  # GitLab default
             }
             
