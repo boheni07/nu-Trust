@@ -80,11 +80,39 @@ export function subscribeToChat(ticketId, onMessage) {
 
   return {
     get isActivated() { return client?.active || false },
+    publish(path, body) {
+      try {
+        client.publish({ destination: path, body: JSON.stringify(body) })
+      } catch (e) {
+        console.error('STOMP publish error:', e)
+      }
+    },
     disconnect() {
       try { client?.deactivate() } catch {}
       stompClients.delete(id)
     },
   }
+}
+
+export function subscribeToTyping(ticketId, onTyping) {
+  const subPath = `/topic/ticket.${ticketId}/typing`
+  // We reuse the STOMP client via a dedicated subscription
+  const clients = stompClients
+  const id = String(ticketId)
+  const client = clients.get(id)
+  if (client?.active) {
+    return client.subscribe(subPath, (msg) => {
+      if (msg.body) {
+        try {
+          const data = JSON.parse(msg.body)
+          onTyping(data)
+        } catch {
+          onTyping(true)
+        }
+      }
+    })
+  }
+  return () => {}
 }
 
 /** Disconnect all chat clients */

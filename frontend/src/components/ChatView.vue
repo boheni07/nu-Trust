@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import { getChatMessages, sendChatMessage, subscribeToChat } from '../api/chat.js'
+import { getChatMessages, sendChatMessage, subscribeToChat, subscribeToTyping } from '../api/chat.js'
 
 const props = defineProps({
   ticketId: [String, Number],
@@ -14,6 +14,16 @@ const connected = ref(false)
 const wsError = ref(false)
 
 const scrollRef = ref(null)
+const fileInputRef = ref(null)
+
+// typing indicator
+const typingTimeout = ref(null)
+const isTyping = ref(false)
+const isOthersTyping = ref(false)
+
+// file upload
+const selectedFiles = ref([])
+const uploadedImageUrls = ref([])
 
 function scrollToBottom() {
   nextTick(() => {
@@ -37,12 +47,72 @@ async function loadHistory() {
   }
 }
 
+function sendTypingStart() {
+  clearTimeout(typingTimeout.value)
+  if (!isTyping.value) {
+    isTyping.value = true
+    sub?.publish('/app/typing.' + props.ticketId, {
+      ticketId: props.ticketId,
+      userId: 1,
+      userName: '사용자',
+    })
+  }
+  typingTimeout.value = setTimeout(() => {
+    isTyping.value = false
+  }, 2000)
+}
+
+function handleTyping() {
+  sendTypingStart()
+}
+
+async function uploadSelectedFiles() {
+  if (selectedFiles.value.length === 0) return []
+
+  const urls = []
+  for (const item of selectedFiles.value) {
+    try {
+      const formData = new FormData()
+      formData.append('file', item.file)
+      const response = await fetch('/api/v1/files/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      if (response.ok) {
+        const json = await response.json()
+        if (json.url) urls.push(json.url)
+      }
+    } catch (e) {
+      console.error('파일 업로드 실패:', e)
+    }
+  }
+
+  selectedFiles.value = []
+  return urls
+}
+
 async function sendMessage() {
-  if (!input.value.trim() || sending.value || !props.ticketId) return
+  const trimmedInput = input.value.trim()
+  if (!trimmedInput && uploadedImageUrls.value.length === 0) return
+
+  const fileUrls = await uploadSelectedFiles()
+  const allImageUrls = [...(uploadedImageUrls.value || []), ...fileUrls]
+
   sending.value = true
   try {
-    await sendChatMessage(props.ticketId, input.value.trim())
+    await sendChatMessage(props.ticketId, trimmedInput, allImageUrls)
+
+    // also publish via WebSocket if connected
+    if (sub?.isActivated) {
+      sub.publish('/app/chat.' + props.ticketId, {
+        ticketId: props.ticketId,
+        content: trimmedInput,
+        imageUrl: allImageUrls,
+      })
+    }
+
     input.value = ''
+    uploadedImageUrls.value = []
     await loadHistory()
   } catch {
     alert('메시지 전송 실패')
@@ -58,7 +128,34 @@ function handleKeydown(e) {
   }
 }
 
+const handleFileSelect = async (event) => {
+  const files = event.target.files
+  if (!files || files.length === 0) return
+
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) continue
+    if (file.size > 10 * 1024 * 1024) continue
+
+    const previewUrl = URL.createObjectURL(file)
+    selectedFiles.value.push({
+      file,
+      previewUrl,
+      name: file.name,
+    })
+  }
+
+  event.target.value = ''
+}
+
+const removeFile = (index) => {
+  const removed = selectedFiles.value.splice(index, 1)[0]
+  if (removed && removed.previewUrl) {
+    URL.revokeObjectURL(removed.previewUrl)
+  }
+}
+
 let sub = null
+let unsubTyping = null
 
 onMounted(async () => {
   await loadHistory()
@@ -69,6 +166,14 @@ onMounted(async () => {
     const msg = formatMsg(data)
     messages.value.push(msg)
     scrollToBottom()
+  })
+
+  unsubTyping = subscribeToTyping(props.ticketId, () => {
+    isOthersTyping.value = true
+    clearTimeout(typingTimeout.value)
+    typingTimeout.value = setTimeout(() => {
+      isOthersTyping.value = false
+    }, 3000)
   })
 })
 
@@ -94,6 +199,8 @@ watch(() => sub?.isActivated, (val) => {
 
 onUnmounted(() => {
   sub?.disconnect()
+  unsubTyping?.()
+  clearTimeout(typingTimeout.value)
 })
 </script>
 
@@ -128,10 +235,37 @@ onUnmounted(() => {
       </div>
     </div>
 
+    <div v-if="isOthersTyping" class="typing-indicator-bar">
+      <span class="typing-dot"></span>
+      <span>메시지 작성 중...</span>
+    </div>
+
     <div class="chat-input-area">
       <div class="chat-input-box">
+        <input
+          ref="fileInputRef"
+          type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          class="file-input-hidden"
+          @change="handleFileSelect"
+        />
+
+        <button class="file-upload-btn" @click="fileInputRef.click()" title="파일 첨부">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+          </svg>
+        </button>
+
+        <div v-if="selectedFiles.length > 0" class="file-preview">
+          <div v-for="(file, idx) in selectedFiles" :key="idx" class="file-preview-item">
+            <img :src="file.previewUrl" :alt="file.name" class="preview-thumbnail" />
+            <button class="remove-file-btn" @click="removeFile(idx)">&times;</button>
+          </div>
+        </div>
+
         <textarea
           v-model="input"
+          @input="handleTyping"
           @keydown="handleKeydown"
           placeholder="메시지를 입력하세요..."
           rows="1"
@@ -341,6 +475,93 @@ onUnmounted(() => {
 
 .chat-send-btn .spin {
   animation: spin 0.8s linear infinite;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+.file-upload-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-400);
+  padding: 4px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--anim);
+  flex-shrink: 0;
+}
+
+.file-upload-btn:hover {
+  color: var(--teal);
+}
+
+.file-preview {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.file-preview-item {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--gray-200);
+  flex-shrink: 0;
+}
+
+.preview-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-file-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+}
+
+.typing-indicator-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 16px;
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.typing-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--teal);
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite;
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
 }
 
 @keyframes spin {

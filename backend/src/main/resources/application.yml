@@ -35,3 +35,8 @@ spring.rabbitmq.host=localhost
 spring.rabbitmq.port=5672
 spring.rabbitmq.username=${RABBITMQ_USER:guest}
 spring.rabbitmq.password=${RABBITMQ_PASS:guest}
+
+# File Upload
+nutrust:
+  upload:
+    path: ./uploads
