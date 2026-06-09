@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
@@ -27,7 +30,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                                            Pageable pageable);
 
     @Query("SELECT t.status, COUNT(t) FROM Ticket t " +
-           "WHERE t.project.id = :projectId AND t.deletedAt IS NULL " +
-           "GROUP BY t.status")
+            "WHERE t.project.id = :projectId AND t.deletedAt IS NULL " +
+            "GROUP BY t.status")
     java.util.List<Object[]> countByProjectIdAndStatus(@Param("projectId") Long projectId);
+
+    List<Ticket> findByDueDateBeforeAndStatusNotIn(LocalDate dueDate, List<String> status);
 }

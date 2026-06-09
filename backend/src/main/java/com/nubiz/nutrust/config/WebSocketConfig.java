@@ -1,5 +1,6 @@
 package com.nubiz.nutrust.config;
 
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.TaskScheduler;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 @Configuration
 @EnableWebSocketMessageBroker
 @EnableScheduling
+@EnableRabbit
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override

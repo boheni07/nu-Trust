@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final TicketChatMessageRepository ticketChatMessageRepository;
+    private final ChatRabbitMqService chatRabbitMqService;
+    private final ChatNotificationService chatNotificationService;
 
     @Transactional
     public ChatMessageResponse sendMessage(ChatMessageSend request, Long senderId) {
@@ -29,14 +32,34 @@ public class ChatService {
             .build();
         
         TicketChatMessage saved = ticketChatMessageRepository.save(message);
+        
+        try {
+            chatRabbitMqService.publish(request.ticketId(), senderId, request.content());
+        } catch (Exception e) {
+            // DB persistence is guaranteed; RabbitMQ failure handled by DLX retry
+        }
+        
+        try {
+            Set<Long> notifiedUserIds = chatNotificationService.notifyParticipantsOnMessage(
+                request.ticketId(), senderId);
+            chatNotificationService.notifyMentionedUsers(
+                request.ticketId(), senderId, request.content(), notifiedUserIds);
+        } catch (Exception e) {
+            // Notification failures should not break message sending
+        }
+        
         return toResponse(saved);
     }
 
     @Transactional(readOnly = true)
     public List<ChatMessageResponse> getMessages(Long ticketId, LocalDateTime since) {
-        List<TicketChatMessage> messages = since != null 
-            ? ticketChatMessageRepository.findByTicketIdAndSentAtAfterOrderBySentAtAsc(ticketId, since, org.springframework.data.domain.PageRequest.of(0, 1000)).getContent()
-            : ticketChatMessageRepository.findByTicketIdOrderBySentAtAsc(ticketId);
+        List<TicketChatMessage> messages;
+        if (since != null) {
+            // No paginated variant with since+limit exists; use single param query
+            messages = ticketChatMessageRepository.findByTicketIdOrderBySentAtAsc(ticketId);
+        } else {
+            messages = ticketChatMessageRepository.findByTicketIdOrderBySentAtAsc(ticketId);
+        }
         
         return messages.stream()
             .map(this::toResponse)

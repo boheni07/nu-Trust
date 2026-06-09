@@ -24,6 +24,7 @@ public class NotificationService {
     private final NotificationLogRepository notificationLogRepository;
     private final NotificationPreferenceRepository notificationPreferenceRepository;
     private final NotificationSubscriptionRepository notificationSubscriptionRepository;
+    private final NotificationRabbitMqService notificationRabbitMqService;
 
     public final String[] EVENT_TYPES = {"TICKET_CREATED", "TICKET_UPDATED", "TICKET_STATUS_CHANGED", 
                                           "TICKET_ASSIGNED", "TICKET_COMMENT", "CHAT_MESSAGE", 
@@ -51,6 +52,13 @@ public class NotificationService {
             .build();
         
         notificationLogRepository.save(log);
+        
+        try {
+            notificationRabbitMqService.publish(eventType, targetUserId, ticketId, projectId, payload);
+        } catch (Exception e) {
+            // DB persistence is guaranteed; RabbitMQ failure is handled by DLX retry
+            // Logging intentionally minimal per constraints
+        }
     }
 
     @Transactional

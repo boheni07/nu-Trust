@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -21,7 +19,6 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
-    private final SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/messages")
     public ResponseEntity<ChatMessageResponse> sendMessage(
@@ -29,9 +26,6 @@ public class ChatController {
             @Valid @RequestBody ChatMessageSend request) {
         
         ChatMessageResponse response = chatService.sendMessage(request, getCurrentUserId());
-        
-        messagingTemplate.convertAndSend("/topic/ticket." + ticketId, response);
-        
         return ResponseEntity.ok(response);
     }
 
@@ -53,9 +47,8 @@ public class ChatController {
     }
 
     @MessageMapping("/chat.{ticketId}")
-    @SendTo("/topic/ticket.{ticketId}")
-    public ChatMessageResponse sendMessageToTopic(ChatMessageSend request) {
-        return chatService.sendMessage(request, getCurrentUserId());
+    public void sendMessageViaWebSocket(@DestinationVariable Long ticketId, ChatMessageSend request) {
+        chatService.sendMessage(request, getCurrentUserId());
     }
 
     private Long getCurrentUserId() {
