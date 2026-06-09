@@ -21,4 +21,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT p FROM Project p WHERE p.deletedAt IS NULL AND " +
            "(p.companyId = :companyId OR p.customerCompanyId = :companyId)")
     List<Project> findByCompanyIdOrCustomerCompanyId(Long companyId);
+
+    @Query("SELECT COUNT(p) FROM Project p WHERE p.status = :status AND p.deletedAt IS NULL")
+    Long countByStatus(@Param("status") String status);
 }

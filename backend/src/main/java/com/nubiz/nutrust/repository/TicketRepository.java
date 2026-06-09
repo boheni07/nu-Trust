@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
@@ -35,4 +36,20 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     java.util.List<Object[]> countByProjectIdAndStatus(@Param("projectId") Long projectId);
 
     List<Ticket> findByDueDateBeforeAndStatusNotIn(LocalDate dueDate, List<String> status);
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE DATE(t.createdAt) = :date AND t.deletedAt IS NULL")
+    Long countByCreatedDate(@Param("date") LocalDate date);
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.dueDate < CURRENT_DATE AND t.status NOT IN ('COMPLETED', 'DELAYED') AND t.deletedAt IS NULL")
+    Long countSlaWarnings();
+
+    @Query("""
+        SELECT t.status, COUNT(t) FROM Ticket t
+        WHERE t.deletedAt IS NULL
+        GROUP BY t.status
+        """)
+    java.util.List<Object[]> aggregateStatusCount();
+
+    @Query("SELECT t FROM Ticket t WHERE t.deletedAt IS NULL ORDER BY t.updatedAt DESC LIMIT :limit")
+    List<Ticket> findRecentTickets(@Param("limit") int limit);
 }
