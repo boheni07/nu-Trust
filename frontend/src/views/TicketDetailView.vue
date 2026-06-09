@@ -1,7 +1,8 @@
 <script>
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { getById, transition, listComments, createComment, listProcessingPlans } from '../api/tickets'
+import { getById, transition, listComments, createComment, listProcessingPlans } from '../api/tickets.js'
+import ChatView from '../components/ChatView.vue'
 
 const STATUS_LABELS = {
   REGISTERED: '등록됨',
@@ -347,40 +348,7 @@ export default {
         </div>
 
         <!-- Chat Section -->
-        <div class="chat-wrap">
-          <div class="chat-header">
-            <div class="chat-title">💬 실시간 채팅 / 댓글</div>
-            <div class="online-dot"></div>
-            <span style="font-size:11px;color:var(--green);font-weight:500">연결됨</span>
-          </div>
-          <div class="chat-messages">
-            <div v-for="(c, i) in comments" :key="i" class="msg" :class="{ mine: c.isMine }">
-              <div v-if="!c.isMine" class="msg-avatar" :style="{ background: c.color }">{{ c.userNameInitial }}</div>
-              <div class="msg-body">
-                <div class="msg-name">{{ c.userName }}</div>
-                <div class="msg-bubble">{{ c.content }}</div>
-                <div class="msg-time">{{ c.createdAt }}</div>
-              </div>
-              <div v-if="c.isMine" class="msg-avatar" :style="{ background: c.color }">{{ c.userNameInitial }}</div>
-            </div>
-          </div>
-          <div class="chat-input-area">
-            <div class="chat-input-box">
-              <textarea
-                v-model="chatInput"
-                @keydown="handleKeydown"
-                placeholder="메시지를 입력하세요..."
-                rows="1"
-              ></textarea>
-              <button class="chat-send-btn" @click="sendMessage" :disabled="sending">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13"/>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
+        <ChatView :ticket-id="id" />
       </div>
 
       <!-- Right Sidebar Panel -->

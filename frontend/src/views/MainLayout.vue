@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import NotificationPanel from '../components/NotificationPanel.vue'
 
 const route = useRoute()
 const expanded = ref(true)
@@ -123,6 +124,9 @@ onMounted(() => {
           <div class="company-name">(주)엔유비즈</div>
         </div>
       </header>
+
+      <!-- Notification Panel -->
+      <NotificationPanel :show="showNotifications" @close="showNotifications = false" />
 
       <!-- Page Content -->
       <main class="main-content">
