@@ -66,6 +66,10 @@ public class Ticket {
     @Column(name = "client_satisfaction", length = 20)
     private String clientSatisfaction;
 
+    @Column(name = "progress", nullable = false)
+    @Builder.Default
+    private Integer progress = 0;
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 

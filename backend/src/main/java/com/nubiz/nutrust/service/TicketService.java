@@ -165,4 +165,74 @@ public class TicketService {
         }
         return new TicketCountSummaryResponse(statusCounts);
     }
+
+    // WBS 407: Assign supporter to ticket
+    public TicketResponse assignSupporter(Long ticketId, Long supportId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+            .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));
+        if (ticket.getDeletedAt() != null) {
+            throw new IllegalArgumentException("삭제된 티켓입니다.");
+        }
+        User support = userRepository.findById(supportId)
+            .orElseThrow(() -> new IllegalArgumentException("대기중인 지지자를 찾을 수 없습니다."));
+        ticket.setAssignedSupporter(support);
+        ticket = ticketRepository.save(ticket);
+        return TicketResponse.from(ticket);
+    }
+
+    // WBS 408: Update ticket progress
+    public TicketResponse updateProgress(Long ticketId, Integer progress) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+            .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));
+        if (ticket.getDeletedAt() != null) {
+            throw new IllegalArgumentException("삭제된 티켓입니다.");
+        }
+        if (progress < 0 || progress > 100) {
+            throw new IllegalArgumentException("진행률은 0-100 사이여야 합니다.");
+        }
+        ticket.setProgress(progress);
+        ticket = ticketRepository.save(ticket);
+        return TicketResponse.from(ticket);
+    }
+
+    // WBS 409: Complete ticket (approve/reject)
+    public TicketResponse completeTicket(Long ticketId, Boolean approve) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+            .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));
+        if (ticket.getDeletedAt() != null) {
+            throw new IllegalArgumentException("삭제된 티켓입니다.");
+        }
+        if (!"COMPLETION_REQUESTED".equals(ticket.getCurrentStatus())) {
+            throw new IllegalArgumentException("완료 요청 상태가 아닙니다.");
+        }
+        if (approve) {
+            ticket.setStatus("COMPLETED");
+            ticket.setCurrentStatus("COMPLETED");
+            ticket.setActualCompletionDate(LocalDate.now());
+        } else {
+            ticket.setStatus("PROCESSING");
+            ticket.setCurrentStatus("PROCESSING");
+        }
+        ticket = ticketRepository.save(ticket);
+        return TicketResponse.from(ticket);
+    }
+
+    // WBS 410: Delay ticket
+    public TicketResponse delayTicket(Long ticketId, String reason) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+            .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));
+        if (ticket.getDeletedAt() != null) {
+            throw new IllegalArgumentException("삭제된 티켓입니다.");
+        }
+        if (!"PROCESSING".equals(ticket.getCurrentStatus())) {
+            throw new IllegalArgumentException("진행중 상태만 지연 처리할 수 있습니다.");
+        }
+        ticket.setStatus("DELAYED");
+        ticket.setCurrentStatus("DELAYED");
+        if (reason != null && !reason.isBlank()) {
+            ticket.setDescription(ticket.getDescription() + "\n\n[지연 사유] " + reason);
+        }
+        ticket = ticketRepository.save(ticket);
+        return TicketResponse.from(ticket);
+    }
 }

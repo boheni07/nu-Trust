@@ -69,4 +69,36 @@ public class TicketController {
     public ResponseEntity<TicketCountSummaryResponse> getCountByStatus(@PathVariable Long projectId) {
         return ResponseEntity.ok(ticketService.getCountByStatus(projectId));
     }
+
+    // WBS 407
+    @PatchMapping("/{id}/assign")
+    public ResponseEntity<TicketResponse> assignSupporter(
+        @PathVariable Long id,
+        @RequestParam Long supportId) {
+        return ResponseEntity.ok(ticketService.assignSupporter(id, supportId));
+    }
+
+    // WBS 408
+    @PatchMapping("/{id}/progress")
+    public ResponseEntity<TicketResponse> updateProgress(
+        @PathVariable Long id,
+        @RequestParam Integer progress) {
+        return ResponseEntity.ok(ticketService.updateProgress(id, progress));
+    }
+
+    // WBS 409
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<TicketResponse> completeTicket(
+        @PathVariable Long id,
+        @RequestParam Boolean approve) {
+        return ResponseEntity.ok(ticketService.completeTicket(id, approve));
+    }
+
+    // WBS 410
+    @PatchMapping("/{id}/delayed")
+    public ResponseEntity<TicketResponse> delayTicket(
+        @PathVariable Long id,
+        @RequestParam(required = false) String reason) {
+        return ResponseEntity.ok(ticketService.delayTicket(id, reason));
+    }
 }

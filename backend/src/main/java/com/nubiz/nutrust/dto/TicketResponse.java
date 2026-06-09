@@ -23,6 +23,7 @@ public record TicketResponse(
     LocalDate dueDate,
     LocalDate actualCompletionDate,
     String clientSatisfaction,
+    Integer progress,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ) {
@@ -43,6 +44,7 @@ public record TicketResponse(
             .dueDate(t.getDueDate())
             .actualCompletionDate(t.getActualCompletionDate())
             .clientSatisfaction(t.getClientSatisfaction())
+            .progress(t.getProgress())
             .createdAt(t.getCreatedAt())
             .updatedAt(t.getUpdatedAt())
             .build();
