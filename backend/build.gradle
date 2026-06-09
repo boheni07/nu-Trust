@@ -13,12 +13,6 @@ java {
 	}
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
 repositories {
 	mavenCentral()
 }
@@ -43,6 +37,9 @@ dependencies {
 
 	// RabbitMQ
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+	// WebSocket (SockJS + STOMP)
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
