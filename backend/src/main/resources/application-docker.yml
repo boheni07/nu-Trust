@@ -15,3 +15,45 @@ spring.rabbitmq.password=${RABBITMQ_PASS:guest}
 
 # JPA
 spring.jpa.hibernate.ddl-auto=validate
+
+# ── Rate Limiting (Resilience4j) ──
+resilience4j:
+  ratelimiter:
+    instances:
+      auth-limiter:
+        limit-for-period: 20
+        limit-refresh-period: 1s
+        timeout-duration: 0
+      auth-refresh-limiter:
+        limit-for-period: 5
+        limit-refresh-period: 1s
+        timeout-duration: 0
+      ticket-limiter:
+        limit-for-period: 50
+        limit-refresh-period: 1s
+        timeout-duration: 0
+      chat-limiter:
+        limit-for-period: 30
+        limit-refresh-period: 1s
+        timeout-duration: 0
+      default-limiter:
+        limit-for-period: 100
+        limit-refresh-period: 1s
+        timeout-duration: 0
+
+# ── JWT Security ──
+app:
+  jwt:
+    secret: ${JWT_SECRET:changemechangemechangemechangemechangemechangeme}
+    expiration: 86400000
+    refresh-expiration: 604800000
+    blacklist:
+      enabled: true
+    token:
+      reuse-detection-delay: 30000
+    authorization:
+      roles:
+        - ADMIN
+        - COMPANY_ADMIN
+        - SUPPORT
+        - CUSTOMER

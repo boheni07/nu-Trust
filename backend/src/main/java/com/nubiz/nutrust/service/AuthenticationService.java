@@ -162,7 +162,12 @@ public class AuthenticationService {
 			.build();
 	}
 
-	public void logout(String refreshToken) {
+	public void logout(String refreshToken, String accessToken) {
+		// Blacklist access token
+		if (accessToken != null && !accessToken.isEmpty()) {
+			tokenProvider.blacklistToken(accessToken);
+		}
+
 		if (!tokenProvider.validateToken(refreshToken)) {
 			throw new RuntimeException("Invalid refresh token");
 		}

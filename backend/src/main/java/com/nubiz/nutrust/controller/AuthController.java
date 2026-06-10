@@ -2,6 +2,7 @@ package com.nubiz.nutrust.controller;
 
 import com.nubiz.nutrust.dto.LoginRequest;
 import com.nubiz.nutrust.dto.LoginResponse;
+import com.nubiz.nutrust.dto.LogoutRequest;
 import com.nubiz.nutrust.dto.RefreshTokenRequest;
 import com.nubiz.nutrust.dto.RegisterRequest;
 import com.nubiz.nutrust.service.AuthenticationService;
@@ -29,8 +30,8 @@ public class AuthController {
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<Void> logout(@RequestBody RefreshTokenRequest request) {
-		authenticationService.logout(request.getRefreshToken());
+	public ResponseEntity<Void> logout(@Valid @RequestBody LogoutRequest request) {
+		authenticationService.logout(request.getRefreshToken(), request.getAccessToken());
 		return ResponseEntity.ok().build();
 	}
 
