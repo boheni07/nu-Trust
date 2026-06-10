@@ -1,0 +1,45 @@
+nutrust.kr {
+	encode gzip zstd
+	referer_off
+
+	tls {
+		protocols tls1.2 tls1.3
+		ciphers TLS_AES_128_GCM_SHA256 TLS_AES_256_GCM_SHA384 TLS_CHACHA20_POLY1305_SHA256
+	}
+
+	root * /srv
+
+	handle_path /api/* {
+		reverse_proxy nutrust-backend:8080
+	}
+
+	handle_path /ws/* {
+		reverse_proxy nutrust-backend:8080 {
+			transport http {
+				websockets true
+			}
+		}
+	}
+
+	handle {
+		file_server
+		try_files {path} /index.html
+
+		header {
+			X-Frame-Options DENY
+			X-Content-Type-Options nosniff
+			Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+			Referrer-Policy "strict-origin-when-cross-origin"
+			Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		}
+
+		@static path *.js *.css *.png *.jpg *.gif *.ico *.svg *.woff *.woff2
+		header @static Cache-Control "public, max-age=31536000, immutable"
+	}
+
+	redir https://{host}{uri} 301
+}
+
+:80 {
+	redir https://{host}{uri} 301
+}

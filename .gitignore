@@ -88,3 +88,6 @@ coverage/
 
 # === GitLab CI cache (local) ===
 .gl-cache/
+
+# === Deploy env files ===
+Sisyphus/deploy/.env.*

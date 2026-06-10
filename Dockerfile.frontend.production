@@ -1,0 +1,12 @@
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm install --legacy-peer-deps
+COPY frontend/ .
+RUN npm run build
+
+FROM caddy:2.8-alpine
+COPY --from=build /app/dist /srv
+COPY Sisyphus/deploy/configs/Caddyfile.production /etc/caddy/Caddyfile
+EXPOSE 80 443
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
