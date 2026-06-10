@@ -1,0 +1,59 @@
+spring.datasource.url=jdbc:postgresql://localhost:5532/nutrust
+spring.datasource.username=nutrust
+spring.datasource.password=nutrust
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.default_timezone=Asia/Seoul
+
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration
+
+app.jwt.secret=${JWT_SECRET:changemechangemechangemechangemechangemechangeme}
+app.jwt.expiration=86400000
+app.jwt.refresh-expiration=604800000
+app.jwt.blacklist.enabled=true
+app.jwt.token.reuse-detection-delay=30000
+app.jwt.authorization.roles=ADMIN,COMPANY_ADMIN,SUPPORT,CUSTOMER
+
+server.port=8080
+
+management.endpoints.web.exposure.include=health,info
+
+spring.data.redis.host=localhost
+spring.data.redis.port=6579
+
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5872
+spring.rabbitmq.username=nutrust
+spring.rabbitmq.password=nutrust
+
+nutrust:
+  upload:
+    path: ./uploads
+
+resilience4j:
+  ratelimiter:
+    instances:
+      auth-limiter:
+        limit-for-period: 20
+        limit-refresh-period: 1s
+        timeout-duration: 0
+      auth-refresh-limiter:
+        limit-for-period: 5
+        limit-refresh-period: 1s
+        timeout-duration: 0
+      ticket-limiter:
+        limit-for-period: 50
+        limit-refresh-period: 1s
+        timeout-duration: 0
+      chat-limiter:
+        limit-for-period: 30
+        limit-refresh-period: 1s
+        timeout-duration: 0
+      default-limiter:
+        limit-for-period: 100
+        limit-refresh-period: 1s
+        timeout-duration: 0

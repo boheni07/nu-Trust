@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5532:5432"
+    environment:
+      POSTGRES_DB: nutrust
+      POSTGRES_USER: nutrust
+      POSTGRES_PASSWORD: nutrust
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6579:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - "5872:5672"
+      - "15673:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: nutrust
+      RABBITMQ_DEFAULT_PASS: nutrust
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redis_data:
+  rabbitmq_data:
