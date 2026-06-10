@@ -90,9 +90,10 @@ public class ChatService {
     @Transactional
     public ChatMessageResponse editMessage(Long messageId, String newContent) {
         TicketChatMessage message = ticketChatMessageRepository.findById(messageId)
-            .orElseThrow(() -> new RuntimeException("Chat message not found: " + messageId));
+            .orElseThrow(() -> new IllegalArgumentException("Chat message not found: " + messageId));
         message.setContent(newContent);
         message.setIsEdited(true);
+        ticketChatMessageRepository.save(message);
         return toResponse(message);
     }
 

@@ -19,6 +19,7 @@ public class NoticeService {
 
 	private final NoticeRepository noticeRepository;
 
+	@Transactional
 	public NoticeResponse create(Long companyId, Long authorId, NoticeCreateRequest request) {
 		Notice notice = Notice.builder()
 			.companyId(companyId)
@@ -33,6 +34,7 @@ public class NoticeService {
 		return toResponse(saved);
 	}
 
+	@Transactional
 	public NoticeResponse update(Long companyId, Long id, NoticeUpdateRequest request) {
 		Notice notice = noticeRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("Notice not found: " + id));
@@ -51,6 +53,7 @@ public class NoticeService {
 		return toResponse(saved);
 	}
 
+	@Transactional
 	public void delete(Long companyId, Long id) {
 		Notice notice = noticeRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("Notice not found: " + id));

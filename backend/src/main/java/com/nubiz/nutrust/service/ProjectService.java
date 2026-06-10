@@ -33,7 +33,7 @@ public class ProjectService {
             .orElseThrow(() -> new RuntimeException("Current user not found"));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
     @Transactional
     public ProjectResponse create(ProjectCreateRequest request) {
         companyRepository.findById(request.getCompanyId())
@@ -62,7 +62,7 @@ public class ProjectService {
         return toResponse(projectRepository.save(project));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
     @Transactional(readOnly = true)
     public List<ProjectResponse> list() {
         User currentUser = getCurrentUser();
@@ -80,14 +80,14 @@ public class ProjectService {
         return projects.stream().map(this::toResponse).toList();
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
     @Transactional(readOnly = true)
     public ProjectResponse get(Long id) {
         return toResponse(projectRepository.findByIdAndDeletedAtIsNull(id)
             .orElseThrow(() -> new IllegalArgumentException("Project not found: " + id)));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
     @Transactional
     public ProjectResponse update(Long id, ProjectCreateRequest request) {
         Project project = projectRepository.findByIdAndDeletedAtIsNull(id)
@@ -103,7 +103,7 @@ public class ProjectService {
         return toResponse(project);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
     @Transactional
     public void delete(Long id) {
         Project project = projectRepository.findByIdAndDeletedAtIsNull(id)
@@ -111,7 +111,7 @@ public class ProjectService {
         project.softDelete();
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
     @Transactional
     public ProjectResponse updateStatus(Long id, String status) {
         Project project = projectRepository.findByIdAndDeletedAtIsNull(id)
@@ -125,7 +125,7 @@ public class ProjectService {
         return toResponse(projectRepository.save(project));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
     @Transactional
     public ProjectDetailResponse assignManager(Long projectId, Long managerId, String role) {
         Project project = projectRepository.findByIdAndDeletedAtIsNull(projectId)
@@ -154,7 +154,7 @@ public class ProjectService {
         return buildProjectDetailResponse(project);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
     @Transactional
     public void removeManager(Long projectId, Long managerId) {
         ProjectManagerId id = new ProjectManagerId(projectId, managerId);
@@ -164,7 +164,7 @@ public class ProjectService {
         projectManagerRepository.deleteById(id);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
     @Transactional(readOnly = true)
     public ProjectDetailResponse getDetail(Long id) {
         Project project = projectRepository.findByIdAndDeletedAtIsNull(id)

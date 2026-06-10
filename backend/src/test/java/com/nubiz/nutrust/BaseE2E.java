@@ -130,7 +130,7 @@ public abstract class BaseE2E {
     protected long seededExtensionRequestId = 0;
 
     @BeforeEach
-    void setUp() {
+    protected void setUp() throws Exception {
         SecurityContextHolder.clearContext();
         cleanDb();
         createAdminUser();
@@ -295,8 +295,6 @@ public abstract class BaseE2E {
     }
 
     protected String loginUser(String email, String password) throws Exception {
-        cleanDb();
-        createAdminUser();
         return performLoginAndReturnToken(email, password);
     }
 
@@ -312,9 +310,14 @@ public abstract class BaseE2E {
     }
 
     protected void cleanDb() {
-        String[] tables = {"user_roles", "users", "roles", "tickets", "ticket_comments",
-            "ticket_histories", "ticket_attachments", "ticket_labels", "companies",
-            "ticket_label_mapping", "ticket_status_histories", "audit_logs"};
+        // Mapped exactly to @Entity @Table annotations in com.nubiz.nutrust.entity
+        // 18 entity tables + 1 join table (user_roles from User@ManyToMany)
+        String[] tables = {"user_roles", "users", "roles", "companies", "holidays",
+            "business_calendars", "notices", "projects", "project_managers",
+            "project_support_managers", "tickets", "ticket_comments", "ticket_files",
+            "ticket_chat_messages", "processing_plans", "extension_requests",
+            "notification_logs", "notification_event_subscriptions",
+            "notification_preferences"};
         for (String table : tables) {
             try {
                 jdbcTemplate.execute("TRUNCATE TABLE " + table + " RESTART IDENTITY CASCADE");

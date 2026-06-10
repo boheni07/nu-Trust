@@ -19,7 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -88,6 +91,23 @@ public class AuthenticationService {
 
 		userRepository.save(user);
 
+		var authorities = user.getRoles().stream()
+			.map(role -> new SimpleGrantedAuthority(role.getName()))
+			.toList();
+		Authentication authentication = new UsernamePasswordAuthenticationToken(
+			user.getEmail(), null, authorities
+		);
+
+		String accessToken = tokenProvider.createAccessToken(authentication);
+		String refreshToken = tokenProvider.createRefreshToken(authentication);
+
+		redisTemplate.opsForValue().set(
+			"refreshToken:" + user.getId(),
+			refreshToken,
+			refreshTokenExpiration,
+			TimeUnit.MILLISECONDS
+		);
+
 		LoginResponse.UserInfo userInfo = LoginResponse.UserInfo.builder()
 			.id(user.getId())
 			.email(user.getEmail())
@@ -96,8 +116,8 @@ public class AuthenticationService {
 			.build();
 
 		return LoginResponse.builder()
-			.accessToken("")
-			.refreshToken("")
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
 			.user(userInfo)
 			.build();
 	}

@@ -17,7 +17,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/tickets/{ticketId}/comments")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 public class TicketCommentController {
 
     private final TicketCommentService commentService;

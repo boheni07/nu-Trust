@@ -37,7 +37,7 @@ public class UserService {
 			.orElseThrow(() -> new RuntimeException("Current user not found"));
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@Transactional
 	public UserResponse create(UserCreateRequest request) {
 		if (userRepository.existsByEmail(request.getEmail())) {
@@ -60,7 +60,7 @@ public class UserService {
 		return UserResponse.from(userRepository.save(user));
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
 	@Transactional(readOnly = true)
 	public List<UserResponse> list(String nameFilter) {
 		User adminUser = getCurrentUser();
@@ -72,7 +72,7 @@ public class UserService {
 			.toList();
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
 	@Transactional(readOnly = true)
 	public UserResponse getById(Long id) {
 		User user = userRepository.findById(id)
@@ -81,7 +81,7 @@ public class UserService {
 		return UserResponse.from(user);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
 	@Transactional
 	public UserResponse update(Long id, UserUpdateRequest request) {
 		User user = userRepository.findById(id)
@@ -97,7 +97,7 @@ public class UserService {
 		return UserResponse.from(userRepository.save(user));
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@Transactional
 	public void delete(Long id) {
 		var user = userRepository.findById(id)
@@ -106,7 +106,7 @@ public class UserService {
 		userRepository.deleteById(id);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@Transactional
 	public UserResponse setStatus(Long id, UserStatus status) {
 		var user = userRepository.findById(id)

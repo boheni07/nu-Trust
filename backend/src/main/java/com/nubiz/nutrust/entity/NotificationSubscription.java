@@ -16,10 +16,10 @@ public class NotificationSubscription {
     @EmbeddedId
     private NotificationSubscriptionId id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, insertable = false, updatable = false)
     private Long userId;
 
-    @Column(name = "event_type", nullable = false, length = 50)
+    @Column(name = "event_type", nullable = false, length = 50, insertable = false, updatable = false)
     private String eventType;
 
     @Column(name = "channel", nullable = false, length = 20)

@@ -30,7 +30,7 @@ public class CompanyService {
 			.orElseThrow(() -> new RuntimeException("Current user not found"));
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@Transactional
 	public CompanyResponse create(CompanyCreateRequest request) {
 		Company company = Company.builder()
@@ -43,7 +43,7 @@ public class CompanyService {
 		return CompanyResponse.from(companyRepository.save(company));
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
 	@Transactional(readOnly = true)
 	public List<CompanyResponse> list() {
 		User adminUser = getCurrentUser();
@@ -61,7 +61,7 @@ public class CompanyService {
 		return List.of(CompanyResponse.from(myCompany));
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
 	@Transactional(readOnly = true)
 	public CompanyResponse get(Long id) {
 		User adminUser = getCurrentUser();
@@ -81,7 +81,7 @@ public class CompanyService {
 		return CompanyResponse.from(company);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@Transactional
 	public CompanyResponse update(CompanyUpdateRequest request) {
 		Company company = companyRepository.findById(request.getId())
@@ -95,13 +95,13 @@ public class CompanyService {
 		return CompanyResponse.from(company);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@Transactional
 	public void delete(Long id) {
 		companyRepository.deleteById(id);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_COMPANY_ADMIN')")
 	@Transactional(readOnly = true)
 	public List<CompanyResponse> searchByName(String name) {
 		User adminUser = getCurrentUser();

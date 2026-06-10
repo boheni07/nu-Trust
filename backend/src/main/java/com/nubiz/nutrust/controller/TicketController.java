@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/tickets")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 public class TicketController {
 
     private final TicketService ticketService;

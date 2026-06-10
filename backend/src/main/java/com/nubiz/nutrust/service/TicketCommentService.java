@@ -18,7 +18,7 @@ import java.security.Principal;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class TicketCommentService {
 
     private final TicketCommentRepository commentRepository;
@@ -30,6 +30,7 @@ public class TicketCommentService {
         throw new IllegalStateException("AuthContext not implemented yet");
     }
 
+    @Transactional
     public TicketCommentResponse create(TicketCommentCreateRequest request, Principal principal) {
         Ticket ticket = ticketRepository.findById(request.ticketId())
             .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));

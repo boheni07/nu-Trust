@@ -6,17 +6,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class HolidayControllerE2E extends BaseE2E {
+public class BusinessCalendarControllerE2E extends BaseE2E {
 
     @Autowired
     private MockMvc mockMvc;
 
     private String token;
+    private long seededBusinessCalendarId;
 
     @BeforeEach
     protected void setUp() throws Exception {
@@ -25,23 +27,29 @@ public class HolidayControllerE2E extends BaseE2E {
     }
 
     @Test
-    @DisplayName("공휴일 생성 - 성공")
+    @DisplayName("비즈니스 캘린더 생성 - 성공")
     void create_success() throws Exception {
         String body = """
             {
-                "holidayDate": "2024-12-25",
-                "holidayName": "크리스마스",
-                "holidayType": "NATIONAL"
+                "calendarName": "테스트 캘린더",
+                "startTime": "10:00",
+                "endTime": "17:00"
             }
             """;
 
-        mockMvc.perform(post("/api/v1/system/holidays")
+        MvcResult result = mockMvc.perform(post("/api/v1/system/business-calendars")
                 .header("Authorization", "Bearer " + token)
                 .header("X-Company-Id", seededCompanyId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.holidayName").value("크리스마스"));
+            .andExpect(jsonPath("$.calendarName").value("테스트 캘린더"))
+            .andReturn();
+
+        seededBusinessCalendarId = Long.parseLong(
+            result.getResponse().getContentAsString()
+                .replaceAll("[^0-9]", "")
+        );
     }
 
     @Test
@@ -49,7 +57,7 @@ public class HolidayControllerE2E extends BaseE2E {
     void create_missingFields_returnsBadRequest() throws Exception {
         String body = "{}";
 
-        mockMvc.perform(post("/api/v1/system/holidays")
+        mockMvc.perform(post("/api/v1/system/business-calendars")
                 .header("Authorization", "Bearer " + token)
                 .header("X-Company-Id", seededCompanyId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -58,9 +66,9 @@ public class HolidayControllerE2E extends BaseE2E {
     }
 
     @Test
-    @DisplayName("공휴일 목록 조회 - 성공")
-    void listAll_success() throws Exception {
-        mockMvc.perform(get("/api/v1/system/holidays")
+    @DisplayName("비즈니스 캘린더 목록 조회 - 성공")
+    void list_all() throws Exception {
+        mockMvc.perform(get("/api/v1/system/business-calendars")
                 .header("Authorization", "Bearer " + token)
                 .header("X-Company-Id", seededCompanyId))
             .andExpect(status().isOk())
@@ -68,52 +76,40 @@ public class HolidayControllerE2E extends BaseE2E {
     }
 
     @Test
-    @DisplayName("공휴일 상세 조회 - 성공")
-    void getById_success() throws Exception {
-        mockMvc.perform(get("/api/v1/system/holidays/{id}", seededHolidayId)
+    @DisplayName("비즈니스 캘린더 상세 조회 - 성공")
+    void getBusinessCalendar_success() throws Exception {
+        mockMvc.perform(get("/api/v1/system/business-calendars/{id}", seededBusinessCalendarId)
                 .header("Authorization", "Bearer " + token)
                 .header("X-Company-Id", seededCompanyId))
             .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("공휴일 수정 - 성공")
+    @DisplayName("비즈니스 캘린더 수정 - 성공")
     void update_success() throws Exception {
         String body = """
             {
-                "holidayDate": "2024-12-25",
-                "holidayName": "크리스마스 (수정)",
-                "holidayType": "NATIONAL"
+                "calendarName": "수정된 캘린더",
+                "startTime": "10:00",
+                "endTime": "17:00"
             }
             """;
 
-        mockMvc.perform(put("/api/v1/system/holidays/{id}", seededHolidayId)
+        mockMvc.perform(put("/api/v1/system/business-calendars/{id}", seededBusinessCalendarId)
                 .header("Authorization", "Bearer " + token)
                 .header("X-Company-Id", seededCompanyId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.holidayName").value("크리스마스 (수정)"));
+            .andExpect(jsonPath("$.calendarName").value("수정된 캘린더"));
     }
 
     @Test
-    @DisplayName("공휴일 삭제 - 성공")
+    @DisplayName("비즈니스 캘린더 삭제 - 성공")
     void delete_success() throws Exception {
-        mockMvc.perform(delete("/api/v1/system/holidays/{id}", seededHolidayId)
+        mockMvc.perform(delete("/api/v1/system/business-calendars/{id}", seededBusinessCalendarId)
                 .header("Authorization", "Bearer " + token)
                 .header("X-Company-Id", seededCompanyId))
             .andExpect(status().isNoContent());
     }
-
-    @Test
-    @DisplayName("공휴일 범위 조회 - 성공")
-    void findByDateRange_success() throws Exception {
-        mockMvc.perform(get("/api/v1/system/holidays/range")
-                .header("Authorization", "Bearer " + token)
-                .header("X-Company-Id", seededCompanyId)
-                .param("startDate", "2024-01-01")
-                .param("endDate", "2024-12-31"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray());
-    }
-} 
+}

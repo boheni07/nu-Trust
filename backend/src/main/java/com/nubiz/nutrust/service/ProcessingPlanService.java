@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ProcessingPlanService {
 
     private final ProcessingPlanRepository planRepository;
@@ -29,6 +29,7 @@ public class ProcessingPlanService {
         throw new IllegalStateException("AuthContext not implemented yet");
     }
 
+    @Transactional
     public ProcessingPlanResponse create(ProcessingPlanCreateRequest request, Principal principal) {
         Ticket ticket = ticketRepository.findById(request.ticketId())
             .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));
@@ -46,6 +47,7 @@ public class ProcessingPlanService {
         return ProcessingPlanResponse.from(plan);
     }
 
+    @Transactional
     public ProcessingPlanResponse approve(Long planId) {
         ProcessingPlan plan = planRepository.findById(planId)
             .orElseThrow(() -> new IllegalArgumentException("처리계획을 찾을 수 없습니다."));
@@ -54,6 +56,7 @@ public class ProcessingPlanService {
         return ProcessingPlanResponse.from(plan);
     }
 
+    @Transactional
     public ProcessingPlanResponse reject(Long planId) {
         ProcessingPlan plan = planRepository.findById(planId)
             .orElseThrow(() -> new IllegalArgumentException("처리계획을 찾을 수 없습니다."));

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class TicketService {
 
     private final TicketRepository ticketRepository;
@@ -45,6 +45,7 @@ public class TicketService {
         "APPROVED", Set.of("COMPLETED")
     );
 
+    @Transactional
     public TicketResponse create(TicketCreateRequest request) {
         Project project = projectRepository.findById(request.projectId())
             .orElseThrow(() -> new IllegalArgumentException("프로젝트를 찾을 수 없습니다."));
@@ -75,6 +76,7 @@ public class TicketService {
         return TicketResponse.from(ticket);
     }
 
+    @Transactional
     public TicketResponse update(Long ticketId, TicketUpdateRequest request) {
         Ticket ticket = ticketRepository.findById(ticketId)
             .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));
@@ -121,6 +123,7 @@ public class TicketService {
         return TicketResponse.from(ticket);
     }
 
+    @Transactional
     public void softDelete(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
             .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));
@@ -167,6 +170,7 @@ public class TicketService {
     }
 
     // WBS 407: Assign supporter to ticket
+    @Transactional
     public TicketResponse assignSupporter(Long ticketId, Long supportId) {
         Ticket ticket = ticketRepository.findById(ticketId)
             .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));
@@ -181,6 +185,7 @@ public class TicketService {
     }
 
     // WBS 408: Update ticket progress
+    @Transactional
     public TicketResponse updateProgress(Long ticketId, Integer progress) {
         Ticket ticket = ticketRepository.findById(ticketId)
             .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));
@@ -196,6 +201,7 @@ public class TicketService {
     }
 
     // WBS 409: Complete ticket (approve/reject)
+    @Transactional
     public TicketResponse completeTicket(Long ticketId, Boolean approve) {
         Ticket ticket = ticketRepository.findById(ticketId)
             .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));
@@ -218,6 +224,7 @@ public class TicketService {
     }
 
     // WBS 410: Delay ticket
+    @Transactional
     public TicketResponse delayTicket(Long ticketId, String reason) {
         Ticket ticket = ticketRepository.findById(ticketId)
             .orElseThrow(() -> new IllegalArgumentException("티켓을 찾을 수 없습니다."));

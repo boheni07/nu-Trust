@@ -19,7 +19,7 @@ public class HolidayController {
 
 	private final HolidayService holidayService;
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 	@PostMapping
 	public ResponseEntity<HolidayResponse> create(
 		@RequestHeader("X-Company-Id") Long companyId,
@@ -29,7 +29,7 @@ public class HolidayController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<HolidayResponse> update(
 		@RequestHeader("X-Company-Id") Long companyId,
@@ -40,7 +40,7 @@ public class HolidayController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(
 		@RequestHeader("X-Company-Id") Long companyId,
@@ -50,7 +50,7 @@ public class HolidayController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN','SUPPORT')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN','ROLE_SUPPORT')")
 	@GetMapping
 	public ResponseEntity<List<HolidayResponse>> findAll(
 		@RequestHeader("X-Company-Id") Long companyId
@@ -59,7 +59,7 @@ public class HolidayController {
 		return ResponseEntity.ok(responses);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN','SUPPORT')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN','ROLE_SUPPORT')")
 	@GetMapping("/{id}")
 	public ResponseEntity<HolidayResponse> findById(
 		@RequestHeader("X-Company-Id") Long companyId,

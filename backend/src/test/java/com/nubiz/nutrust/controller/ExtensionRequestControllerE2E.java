@@ -19,7 +19,8 @@ public class ExtensionRequestControllerE2E extends BaseE2E {
     private String token;
 
     @BeforeEach
-    void setUp() throws Exception {
+    protected void setUp() throws Exception {
+        super.setUp();
         token = loginAsAdmin();
     }
 

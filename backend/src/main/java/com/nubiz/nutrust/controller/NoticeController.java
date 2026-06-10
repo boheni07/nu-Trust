@@ -19,7 +19,7 @@ public class NoticeController {
 
 	private final NoticeService noticeService;
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 	@PostMapping
 	public ResponseEntity<NoticeResponse> create(
 		@RequestHeader("X-Company-Id") Long companyId,
@@ -30,7 +30,7 @@ public class NoticeController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<NoticeResponse> update(
 		@RequestHeader("X-Company-Id") Long companyId,
@@ -41,7 +41,7 @@ public class NoticeController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(
 		@RequestHeader("X-Company-Id") Long companyId,
@@ -51,7 +51,7 @@ public class NoticeController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN','SUPPORT','CUSTOMER)")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN','ROLE_SUPPORT','ROLE_CUSTOMER')")
 	@GetMapping
 	public ResponseEntity<List<NoticeResponse>> findAll(
 		@RequestHeader("X-Company-Id") Long companyId
@@ -60,7 +60,7 @@ public class NoticeController {
 		return ResponseEntity.ok(responses);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN','SUPPORT','CUSTOMER)")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN','ROLE_SUPPORT','ROLE_CUSTOMER')")
 	@GetMapping("/{id}")
 	public ResponseEntity<NoticeResponse> findById(
 		@RequestHeader("X-Company-Id") Long companyId,

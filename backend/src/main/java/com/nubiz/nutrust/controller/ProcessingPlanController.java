@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tickets/{ticketId}/plans")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 public class ProcessingPlanController {
 
     private final ProcessingPlanService planService;

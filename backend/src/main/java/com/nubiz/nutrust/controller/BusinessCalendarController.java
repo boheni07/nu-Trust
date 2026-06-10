@@ -19,7 +19,7 @@ public class BusinessCalendarController {
 
 	private final BusinessCalendarService businessCalendarService;
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 	@PostMapping
 	public ResponseEntity<BusinessCalendarResponse> create(
 		@RequestHeader("X-Company-Id") Long companyId,
@@ -29,7 +29,7 @@ public class BusinessCalendarController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<BusinessCalendarResponse> update(
 		@RequestHeader("X-Company-Id") Long companyId,
@@ -40,7 +40,7 @@ public class BusinessCalendarController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PreAuthorize("hasAnyAUTHORITY('ADMIN','COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(
 		@RequestHeader("X-Company-Id") Long companyId,
@@ -50,7 +50,7 @@ public class BusinessCalendarController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN','SUPPORT')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN','ROLE_SUPPORT')")
 	@GetMapping
 	public ResponseEntity<List<BusinessCalendarResponse>> findAll(
 		@RequestHeader("X-Company-Id") Long companyId
@@ -59,7 +59,7 @@ public class BusinessCalendarController {
 		return ResponseEntity.ok(responses);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN','SUPPORT')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN','ROLE_SUPPORT')")
 	@GetMapping("/{id}")
 	public ResponseEntity<BusinessCalendarResponse> findById(
 		@RequestHeader("X-Company-Id") Long companyId,
@@ -69,7 +69,7 @@ public class BusinessCalendarController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_COMPANY_ADMIN')")
 	@GetMapping("/default")
 	public ResponseEntity<BusinessCalendarResponse> findDefault(
 		@RequestHeader("X-Company-Id") Long companyId

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -67,9 +68,14 @@ public class JwtTokenProvider {
 		String email = claims.getSubject();
 		String authorities = claims.get("authorities", String.class);
 
-		Collection<? extends GrantedAuthority> authorityList = Arrays.stream(authorities.split(","))
-			.map(SimpleGrantedAuthority::new)
-			.collect(Collectors.toList());
+		Collection<? extends GrantedAuthority> authorityList;
+		if (authorities != null && !authorities.isEmpty()) {
+			authorityList = Arrays.stream(authorities.split(","))
+				.map(SimpleGrantedAuthority::new)
+				.collect(Collectors.toList());
+		} else {
+			authorityList = Collections.emptyList();
+		}
 
 		UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
 			.username(email)

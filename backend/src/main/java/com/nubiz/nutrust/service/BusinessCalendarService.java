@@ -19,6 +19,7 @@ public class BusinessCalendarService {
 
 	private final BusinessCalendarRepository businessCalendarRepository;
 
+	@Transactional
 	public BusinessCalendarResponse create(Long companyId, BusinessCalendarCreateRequest request) {
 		BusinessCalendar calendar = BusinessCalendar.builder()
 			.companyId(companyId)
@@ -37,6 +38,7 @@ public class BusinessCalendarService {
 		return toResponse(saved);
 	}
 
+	@Transactional
 	public BusinessCalendarResponse update(Long companyId, Long id, BusinessCalendarUpdateRequest request) {
 		BusinessCalendar calendar = businessCalendarRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("BusinessCalendar not found: " + id));
@@ -70,6 +72,7 @@ public class BusinessCalendarService {
 		return toResponse(saved);
 	}
 
+	@Transactional
 	public void delete(Long companyId, Long id) {
 		BusinessCalendar calendar = businessCalendarRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("BusinessCalendar not found: " + id));

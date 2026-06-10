@@ -19,6 +19,7 @@ public class HolidayService {
 
 	private final HolidayRepository holidayRepository;
 
+	@Transactional
 	public HolidayResponse create(Long companyId, HolidayCreateRequest request) {
 		Holiday holiday = Holiday.builder()
 			.companyId(companyId)
@@ -31,6 +32,7 @@ public class HolidayService {
 		return toResponse(saved);
 	}
 
+	@Transactional
 	public HolidayResponse update(Long companyId, Long id, HolidayUpdateRequest request) {
 		Holiday holiday = holidayRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("Holiday not found: " + id));
@@ -49,6 +51,7 @@ public class HolidayService {
 		return toResponse(saved);
 	}
 
+	@Transactional
 	public void delete(Long companyId, Long id) {
 		Holiday holiday = holidayRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("Holiday not found: " + id));
